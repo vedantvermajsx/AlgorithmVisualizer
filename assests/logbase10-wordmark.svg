@@ -1,0 +1,28 @@
+<svg width="320" height="80" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;600&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- Dark background pill -->
+  <rect width="320" height="80" rx="16" fill="#0A0C10"/>
+  <rect width="320" height="80" rx="16" fill="none" stroke="#252830" stroke-width="1"/>
+
+  <!-- "log" -->
+  <text font-family="DM Mono, monospace" font-weight="500" font-size="48"
+    fill="#E8E8E8" x="24" y="56" letter-spacing="-1">log</text>
+
+  <!-- subscript "10" positioned after "log" -->
+  <text font-family="DM Mono, monospace" font-weight="600" font-size="24"
+    fill="#4AFFA4" x="122" y="68">10</text>
+
+  <!-- Vertical divider -->
+  <line x1="184" y1="16" x2="184" y2="64" stroke="#252830" stroke-width="1"/>
+
+  <!-- Tagline -->
+  <text font-family="DM Mono, monospace" font-size="10" fill="#4A4E5E"
+    letter-spacing="2.5" x="200" y="36">BASE TEN</text>
+  <text font-family="DM Mono, monospace" font-size="10" fill="#4A4E5E"
+    letter-spacing="2.5" x="200" y="52">LOG SCALE</text>
+</svg>

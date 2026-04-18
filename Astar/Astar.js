@@ -1,37 +1,35 @@
-import { ModulegenerateMaze } from "./generateMaze.js";
-import { setStartNode, setEndNode, toggleWall, handleCellDrag } from "./HandleButtons.js";
+import * as GridModule from "../Modules/GridModule.js";
+import { ModulegenerateMaze } from "../Modules/generateMaze.js";
 
-const numRows = 20;
-const numCols = 50;
+const numRows = GridModule.numRows;
+const numCols = GridModule.numCols;
 let grid = [];
 let startNode = null;
 let endNode = null;
 let openSet = [];
 let closedSet = [];
-let path = [];
-let isAutomatic = false;
 let isMouseDown = false;
 let isRunning = false;
+let isSearching = false;
 
 const gridContainer = document.getElementById("grid-container");
-const nextButton = document.getElementById("next");
-const startAutomaticButton = document.getElementById("automatic");
-const startManualButton = document.getElementById("manual");
+const startButton = document.getElementById("automatic");
 const resetButton = document.getElementById("reset");
 const generateButton = document.getElementById("generate");
 const debugText = document.getElementById("debug-text");
 
-gridContainer.addEventListener('mousedown', () => (isMouseDown = true));
-gridContainer.addEventListener('mouseup', () => (isMouseDown = false));
-gridContainer.addEventListener('mouseleave', () => (isMouseDown = false));
-nextButton.addEventListener('click', nextStep);
-startAutomaticButton.addEventListener('click', startAutomatic);
-startManualButton.addEventListener('click', startManual);
-resetButton.addEventListener('click', resetGrid);
-generateButton.addEventListener('click', generateMaze);
+gridContainer.addEventListener("mousedown", () => (isMouseDown = true));
+gridContainer.addEventListener("mouseup", () => (isMouseDown = false));
+gridContainer.addEventListener("mouseleave", () => (isMouseDown = false));
+startButton.addEventListener("click", startAStar);
+resetButton.addEventListener("click", resetGrid);
+generateButton.addEventListener("click", () => {
+    ModulegenerateMaze(numRows, numCols, grid);
+    debugText.innerText = "Random maze generated!";
+});
 
 function createGrid() {
-    gridContainer.innerHTML = '';
+    gridContainer.innerHTML = "";
     grid = [];
     gridContainer.style.gridTemplateColumns = `repeat(${numCols}, 18px)`;
     gridContainer.style.gridTemplateRows = `repeat(${numRows}, 18px)`;
@@ -39,229 +37,105 @@ function createGrid() {
     for (let row = 0; row < numRows; row++) {
         let gridRow = [];
         for (let col = 0; col < numCols; col++) {
-            const cell = createCell(row, col);
+            const cell = GridModule.createCell(row, col);
             gridRow.push(cell);
-            const div = createCellDiv(cell);
+            const div = GridModule.createCellDiv(
+                cell, 
+                gridContainer, 
+                () => isRunning, 
+                () => isMouseDown, 
+                handleCellClick
+            );
             gridContainer.appendChild(div);
         }
         grid.push(gridRow);
     }
-
-    assignNeighbors();
-}
-
-function createCell(row, col) {
-    return {
-        row,
-        col,
-        isStart: false,
-        isEnd: false,
-        isWall: false,
-        f: Infinity,
-        g: Infinity,
-        h: 0,
-        previous: null,
-        visited: false,
-        neighbors: [],
-    };
-}
-
-function createCellDiv(cell) {
-    const div = document.createElement('div');
-    div.classList.add('cell');
-    div.dataset.row = cell.row;
-    div.dataset.col = cell.col;
-    div.addEventListener('click', () => !isRunning && handleCellClick(div, cell));
-    div.addEventListener('mousemove', () => !isRunning && isMouseDown && handleCellDrag(div, cell));
-    return div;
-}
-
-function assignNeighbors() {
-    for (let row = 0; row < numRows; row++) {
-        for (let col = 0; col < numCols; col++) {
-            const node = grid[row][col];
-            if (row > 0) node.neighbors.push(grid[row - 1][col]);
-            if (row < numRows - 1) node.neighbors.push(grid[row + 1][col]);
-            if (col > 0) node.neighbors.push(grid[row][col - 1]);
-            if (col < numCols - 1) node.neighbors.push(grid[row][col + 1]);
-        }
-    }
+    GridModule.assignNeighbors(grid, numRows, numCols);
 }
 
 function handleCellClick(div, cell) {
     if (!startNode) {
         startNode = cell;
-        setStartNode(cell, div);
+        GridModule.setStartNode(cell, div);
     } else if (!endNode) {
         endNode = cell;
-        setEndNode(cell, div);
+        GridModule.setEndNode(cell, div);
     } else if (!cell.isStart && !cell.isEnd) {
-        toggleWall(cell, div);
-    } else {
-        alert("Cannot assign values while running.");
+        GridModule.toggleWall(cell, div);
     }
 }
 
 function resetGrid() {
-    gridContainer.innerHTML = '';
     createGrid();
-    resetState();
-    debugText.innerText = 'Click "Start Manual" or "Start Automatic" to begin.';
-}
-
-function resetState() {
     isRunning = false;
+    isSearching = false;
     startNode = null;
     endNode = null;
     openSet = [];
     closedSet = [];
-    path = [];
-    isAutomatic = false;
-    nextButton.disabled = false;
-    startAutomaticButton.disabled = false;
+    startButton.disabled = false;
+    debugText.innerText = 'Click "Start" to begin.';
 }
 
 function heuristic(a, b) {
     return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
 }
 
-function startManual() {
+async function startAStar() {
     if (!startNode || !endNode) {
-        alert('Please select both start and end nodes.');
+        alert("Please select both start and end nodes.");
         return;
     }
 
     isRunning = true;
-    openSet = [startNode];
+    isSearching = true;
     startNode.g = 0;
     startNode.f = heuristic(startNode, endNode);
+    startNode.visited = true;
 
-    nextButton.disabled = false;
-    startAutomaticButton.disabled = true;
-    debugText.innerText = 'Manual mode started. Click "Next Step" to proceed.';
+    startButton.disabled = true;
+    debugText.innerText = "A* Algorithm started...";
+
+    spawnWorker(startNode);
 }
 
-function nextStep() {
-    if (openSet.length === 0) {
-        debugText.innerText = 'No path found.';
-        return;
-    }
-
-    openSet.sort((a, b) => a.f - b.f);
-    const current = openSet.shift();
-    current.visited = true;
+function spawnWorker(current) {
+    if (!isRunning || !isSearching) return;
 
     if (current === endNode) {
-        reconstructPath();
+        isSearching = false;
+        GridModule.reconstructPath(endNode, startNode, debugText, () => isRunning);
         return;
     }
 
-    updateNeighbors(current);
-    markAsVisited(current);
-    document.querySelector(`[data-row="${current.row}"][data-col="${current.col}"]`).classList.add('visited');
-    debugText.innerText = `Visiting node at (${current.row}, ${current.col})`;
-}
+    // Delay varies slightly by heuristic to give A* its "directed" organic feel
+    const delay = 30 + (current.h * 1.5); 
 
-function updateNeighbors(current) {
-    current.neighbors.forEach((neighbor) => {
-        if (!neighbor.visited && !neighbor.isWall) {
-            const tempG = current.g + 1;
-            const h = heuristic(neighbor, endNode);
-            if (tempG < neighbor.g) {
-                neighbor.previous = current;
-                neighbor.g = tempG;
-                neighbor.h = h;
-                neighbor.f = neighbor.g + neighbor.h;
-                if (!openSet.includes(neighbor)) openSet.push(neighbor);
-            }
-        }
-    });
-}
-
-function markAsVisited(current) {
-    const cellDiv = document.querySelector(`[data-row="${current.row}"][data-col="${current.col}"]`);
-    cellDiv.classList.add('visited');
-    animateFollowingNodes(current);
-}
-
-function animateFollowingNodes(current) {
-    const cellDiv = document.querySelector(`[data-row="${current.row}"][data-col="${current.col}"]`);
-    cellDiv.style.transition = "background-color 0.4s ease, transform 0.4s ease";
-    cellDiv.style.backgroundColor = 'rgba(255, 255, 0, 0.7)';
-    cellDiv.style.transform = "scale(1.1)";
     setTimeout(() => {
-        cellDiv.style.transform = "scale(1)";
-    }, 400);
-}
+        if (!isRunning || !isSearching) return;
+        
+        debugText.innerText = `Workers actively exploring (A*)...`;
 
-function reconstructPath() {
-    let temp = endNode;
+        current.neighbors.forEach((neighbor) => {
+            if (!neighbor.isWall) {
+                const tempG = current.g + 1;
+                if (tempG < neighbor.g) {
+                    neighbor.previous = current;
+                    neighbor.g = tempG;
+                    neighbor.h = heuristic(neighbor, endNode);
+                    neighbor.f = neighbor.g + neighbor.h;
 
-    while (temp.previous) {
-        path.unshift(temp);
-        temp = temp.previous;
-    }
+                    if (!neighbor.visited) {
+                        neighbor.visited = true;
+                        GridModule.markAsHead(neighbor);
+                        spawnWorker(neighbor);
+                    }
+                }
+            }
+        });
 
-    path.unshift(startNode);
-
-    path.forEach((node, index) => {
-        setTimeout(() => {
-            const nodeDiv = document.querySelector(`[data-row="${node.row}"][data-col="${node.col}"]`);
-            nodeDiv.classList.add('path');
-            nodeDiv.style.transition = "background-color 0.3s ease, transform 0.3s ease";
-            nodeDiv.style.backgroundColor = 'rgba(0, 0, 255, 0.7)';
-            nodeDiv.style.transform = "scale(1.2)";
-            setTimeout(() => {
-                nodeDiv.style.transform = "scale(1)";
-            }, 300);
-        }, index * 100);
-    });
-
-    debugText.innerText = 'Path found!';
-    nextButton.disabled = true;
-}
-
-async function startAutomatic() {
-    if (!startNode || !endNode) {
-        alert('Please select both start and end nodes.');
-        return;
-    }
-
-    isRunning = true;
-    openSet = [startNode];
-    startNode.g = 0;
-    startNode.f = heuristic(startNode, endNode);
-
-    nextButton.disabled = true;
-    startAutomaticButton.disabled = true;
-    debugText.innerText = 'Automatic mode started. Please wait for the algorithm to finish.';
-
-    while (openSet.length > 0) {
-        openSet.sort((a, b) => a.f - b.f);
-        const current = openSet.shift();
-        current.visited = true;
-
-        if (current === endNode) {
-            reconstructPath();
-            return;
-        }
-
-        updateNeighbors(current);
-        markAsVisited(current);
-        document.querySelector(`[data-row="${current.row}"][data-col="${current.col}"]`).classList.add('visited');
-        debugText.innerText = `Visiting node at (${current.row}, ${current.col})`;
-
-        await new Promise((resolve) => setTimeout(resolve, 20));
-    }
-
-    debugText.innerText = 'No path found.';
-    isRunning = false;
-}
-
-function generateMaze() {
-    resetGrid();
-    ModulegenerateMaze(numRows, numCols, grid);
-    debugText.innerText = 'Random maze generated!';
+        GridModule.markAsVisited(current);
+    }, delay);
 }
 
 createGrid();

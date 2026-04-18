@@ -1,189 +1,189 @@
 let array = [];
-const TAndC=`<div class="timeandspace">
-            <span>Time Complexity : O(log(n))</span>
-            <span>Space Complexity : O(1)</span>
-        </div>`;
-let target = null;
 const arrayContainer = document.getElementById("array-container");
 const debugText = document.getElementById("debug-text");
-const debugArrayText = document.getElementById("debug-array-text");
-
-let isSearching = false;
-let left = 0;
-let right = 0;
-let mid = 0;
-let isManualMode = false;
-let isFirst=true;
-
+const SizeInput = document.getElementById("Size");
 const targetInput = document.getElementById("target-val");
-const nextStepButton = document.getElementById("next-step-button");
-const autoSearchButton = document.getElementById("auto-search-button");
-const manualSearchButton = document.getElementById("manual-search-button");
+const stepButton = document.getElementById("step-button");
 
+let Size = 0;
+let target = -1;
+let left = 0, right = 0, mid = -1;
+let isSearching = false;
+let isManual = false;
 
-function generateArray() {
-    const arraySize = 60;
-    const minValue = 1;
-    const maxValue = 100;
-
-    array = Array.from({ length: arraySize }, () => Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue);
-    array.sort((a, b) => a - b); 
-
-    renderArray();
-    resetIndices();
-    updateDebugText("Array generated and sorted. Press 'Start Binary Search' to begin.");
-    displayArrayInDebugPanel();
+function highlightCodeLine(line) {
+    document.querySelectorAll("#algorithm-code span").forEach((codeLine) => codeLine.classList.remove("highlight"));
+    const lineElement = document.getElementById(`code-line-${line}`);
+    if (lineElement) lineElement.classList.add("highlight");
 }
 
-function renderArray() {
-    arrayContainer.innerHTML = "";
-    const maxValue = Math.max(...array);
-
-    array.forEach((value) => {
-        const bar = document.createElement("div");
-        bar.classList.add("bar");
-        bar.style.height = `${(value / maxValue) * 100}%`;
-        arrayContainer.appendChild(bar);
+function resetHighlights() {
+    Array.from(arrayContainer.children).forEach((bar) => {
+        bar.classList.remove("active", "comparing", "sorted", "found", "left-bound", "right-bound");
     });
 }
 
-function displayArrayInDebugPanel() {
-    const arrayString = array.join(", ");
-    debugArrayText.innerText = `Generated Array: [${arrayString}]`;
+function GetSize() {
+    Size = parseInt(SizeInput.value);
+    SizeInput.value = '';
+    if (!Size || Size > 50) {
+        updateDebugText("Please enter a valid size (max 50).");
+        return;
+    }
+    generateArray();
+}
+
+function generateArray() {
+    array = Array.from({ length: Size || 20 }, () => Math.floor(Math.random() * 100) + 10);
+    array.sort((a, b) => a - b);
+    renderArray();
+    updateDebugText("Sorted array generated. Ready for searching.");
+}
+
+function renderArray() {
+    const adjustedMax = Math.max(...array);
+    const bars = arrayContainer.children;
+    if (bars.length !== array.length) {
+        arrayContainer.innerHTML = "";
+        array.forEach((value) => {
+            const bar = document.createElement("div");
+            bar.classList.add("bar");
+            bar.style.height = `${(value / adjustedMax) * 100}%`;
+            arrayContainer.appendChild(bar);
+        });
+    } else {
+        array.forEach((value, index) => {
+            bars[index].style.height = `${(value / adjustedMax) * 100}%`;
+        });
+    }
 }
 
 function updateDebugText(message) {
     debugText.innerText = message;
 }
 
-function resetIndices() {
+async function startAutoSearch() {
+    target = parseInt(targetInput.value);
+    if (isNaN(target)) {
+        alert("Please enter a target value.");
+        return;
+    }
+    isSearching = true;
+    isManual = false;
+    stepButton.disabled = true;
+    
     left = 0;
     right = array.length - 1;
-    mid = 0;
-}
-
-async function startAutoSearch() {
-    if (isSearching || isManualMode) return;
-
-    target = parseInt(targetInput.value);
-     targetInput.value='';
-    if (isNaN(target) || target === "") {
-        updateDebugText("Please enter a valid target value.");
-        return;
-    }
-
-    isSearching = true;
-    updateDebugText(`Searching for value: ${target}`);
-
-    autoSearchButton.disabled = true;
-    manualSearchButton.disabled = true;
-    nextStepButton.disabled = true;
-
-    const bars = document.getElementsByClassName("bar");
-
+    highlightCodeLine(2);
+    await new Promise(resolve => setTimeout(resolve, 400));
+    
     while (left <= right) {
+        highlightCodeLine(3);
+        await new Promise(resolve => setTimeout(resolve, 600));
         
-     Array.from(bars)[left].style.backgroundColor="crimson";
-     Array.from(bars)[right].style.backgroundColor="crimson";
-
         mid = Math.floor((left + right) / 2);
+        highlightCodeLine(4);
         
-        await new Promise((resolve) => setTimeout(resolve, 500));
-     
-     Array.from(bars)[mid].style.backgroundColor="blue";
-        updateDebugText(`Left: ${array[left]}, Mid: ${array[mid]}, Right: ${array[right]}`);
+        resetHighlights();
+        const bars = arrayContainer.children;
+        for(let i=left; i<=right; i++) if(bars[i]) bars[i].classList.add("comparing");
+        if(bars[left]) bars[left].classList.add("left-bound");
+        if(bars[right]) bars[right].classList.add("right-bound");
+        if(bars[mid]) bars[mid].classList.add("active");
+        
+        updateDebugText(`Checking middle element at index ${mid} (value: ${array[mid]})`);
+        await new Promise(resolve => setTimeout(resolve, 600));
 
         if (array[mid] === target) {
-            Array.from(bars).forEach(bar => bar.style.backgroundColor = "green");   
-         Array.from(bars)[mid].style.backgroundColor="yellow";
-            updateDebugText(`Target found at index ${mid}!`);
-            break;
-        } else if (array[mid] < target) {
+            highlightCodeLine(5);
+            resetHighlights();
+            if(bars[mid]) bars[mid].classList.add("found");
+            updateDebugText(`Found ${target} at index ${mid}!`);
+            isSearching = false;
+            return;
+        }
+        
+        if (array[mid] < target) {
+            highlightCodeLine(6);
             left = mid + 1;
+            updateDebugText(`${target} is greater than ${array[mid]}. Moving left boundary to ${left}.`);
         } else {
+            highlightCodeLine(7);
             right = mid - 1;
+            updateDebugText(`${target} is less than ${array[mid]}. Moving right boundary to ${right}.`);
+        }
+        await new Promise(resolve => setTimeout(resolve, 600));
+    }
+    highlightCodeLine(9);
+    updateDebugText(`${target} not found in the array.`);
+    isSearching = false;
+}
+
+function startManualSearch() {
+    target = parseInt(targetInput.value);
+    if (isNaN(target)) {
+        alert("Please enter a target value.");
+        return;
+    }
+    isSearching = true;
+    isManual = true;
+    stepButton.disabled = false;
+    left = 0;
+    right = array.length - 1;
+    updateDebugText("Manual search started. Click 'Step' to proceed.");
+    highlightCodeLine(2);
+}
+
+async function nextStep() {
+    if (!isSearching) return;
+    const bars = document.getElementsByClassName("bar");
+
+    highlightCodeLine(3);
+    if (left <= right) {
+        mid = Math.floor((left + right) / 2);
+        highlightCodeLine(4);
+        
+        resetHighlights();
+        const currentBars = arrayContainer.children;
+        for(let i=left; i<=right; i++) if(currentBars[i]) currentBars[i].classList.add("comparing");
+        if(currentBars[left]) currentBars[left].classList.add("left-bound");
+        if(currentBars[right]) currentBars[right].classList.add("right-bound");
+        if(currentBars[mid]) currentBars[mid].classList.add("active");
+
+        updateDebugText(`Checking index ${mid} (value: ${array[mid]})`);
+        
+        if (array[mid] === target) {
+            highlightCodeLine(5);
+            resetHighlights();
+            const currentBars = arrayContainer.children;
+            if(currentBars[mid]) currentBars[mid].classList.add("found");
+            updateDebugText(`Found ${target} at index ${mid}!`);
+            isSearching = false;
+            stepButton.disabled = true;
+            return;
         }
 
-        await new Promise((resolve) => setTimeout(resolve, 800));
-    }
-
-    if (left > right) {
-        updateDebugText("Target not found in the array.");
-    }
-
-    isSearching = false;
-    autoSearchButton.disabled = false;
-    manualSearchButton.disabled = false;
-}
-
-
-async function startManualSearch() {
-    if (isSearching || isManualMode) return;
-
-    target = parseInt(targetInput.value);
-    targetInput.value ='';
-    if (isNaN(target) || target === "") {
-        updateDebugText("Please enter a valid target value.");
-        return;
-    }
-
-    isManualMode = true;
-    isSearching = true;
-    updateDebugText(`Searching for value: ${target}`);
-
-    autoSearchButton.disabled = true;
-    manualSearchButton.disabled = true;
-    nextStepButton.disabled = false;
-}
-
-
-function nextStep() {
-    if (!isSearching || !isManualMode) return;
-
-    const bars = document.getElementsByClassName("bar");    
-    Array.from(bars)[left].style.backgroundColor="crimson";
-    Array.from(bars)[right].style.backgroundColor="crimson";
-
-    updateDebugText(`Left: ${array[left]},Right: ${array[right]}`);
-      
-    if(!isFirst){
-        calculateMid();
-    }
-    isFirst=!isFirst;
-}
-
-function calculateMid(){
-    const bars = document.getElementsByClassName("bar");
-    mid = Math.floor((left + right) / 2);
-    Array.from(bars)[mid].style.backgroundColor="blue";
-    
-    if (array[mid] === target) {
-        Array.from(bars).forEach(bar => bar.style.backgroundColor = "green");
-    Array.from(bars)[mid].style.backgroundColor="yellow";
-
-        updateDebugText(`Target found at index ${mid}!`);
-        isSearching = false;
-        nextStepButton.disabled = true;
-        return;
-    } else if (array[mid] < target) {
-        left = mid + 1;
+        if (array[mid] < target) {
+            highlightCodeLine(6);
+            left = mid + 1;
+        } else {
+            highlightCodeLine(7);
+            right = mid - 1;
+        }
     } else {
-        right = mid - 1;
+        highlightCodeLine(9);
+        updateDebugText("Element not found.");
+        isSearching = false;
+        stepButton.disabled = true;
     }
-    
-    updateDebugText(`Left: ${array[left]},Mid: ${array[mid]},Right: ${array[right]}`);
-   
 }
-
-
 
 function resetArray() {
     isSearching = false;
-    isManualMode = false;
+    resetHighlights();
+    highlightCodeLine(0);
     generateArray();
-    nextStepButton.disabled = true;
-    autoSearchButton.disabled = false;
-    manualSearchButton.disabled = false;
 }
 
+SizeInput.addEventListener('change', GetSize);
 generateArray();

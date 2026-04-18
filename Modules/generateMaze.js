@@ -6,7 +6,7 @@ export function ModulegenerateMaze(numRows,numCols,grid){
             
             if (cell.isStart || cell.isEnd) continue;
 
-            if (Math.random() < 0.3) { // Adjust probability (0.3 for ~30% walls)
+            if (Math.random() > 0.6) { 
                 cell.isWall = true;
                 cellDiv.classList.add('wall');
             } else {

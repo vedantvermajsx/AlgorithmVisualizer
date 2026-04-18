@@ -1,13 +1,9 @@
 
-/* ----------------------------------------------------------------- */
-/* Global */
-/* ----------------------------------------------------------------- */
 
 body {
     background-color: rgb(25, 25, 25);
-    position: relative; 
+    position: relative;
 }
-
 
 h1 {
     margin: 20px 0;
@@ -25,9 +21,12 @@ h1 {
     margin: 20px auto;
     background-color: #000000;
     padding: 10px;
-    
+    align-items: center;
+    justify-content: center;
+
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    scrollbar-width: none;
 }
 
 .bar {
@@ -91,7 +90,6 @@ button:disabled {
     text-align: left;
 }
 
-
 #debug-text {
     font-size: 1.1em;
     color: #696464;
@@ -114,14 +112,11 @@ input[type="range"] {
     margin-top: 10px;
 }
 
-#bar-width-value, #speed-value {
+#bar-width-value,
+#speed-value {
     font-weight: bold;
     color: #007BFF;
 }
-
-/* ----------------------------------------------------------------- */
-/* Header */
-/* ----------------------------------------------------------------- */
 
 div.header-container {
     display: grid;
@@ -144,18 +139,16 @@ div.gradient-border {
     width: 95%;
     height: 1px;
     margin: 0 auto;
-    background: linear-gradient(to right,  #0067ff, #8900e8);
+    background: linear-gradient(to right, #0067ff, #8900e8);
 }
-
-/* Webkit browsers custom scrollbar */
 
 ::-webkit-scrollbar {
     height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px #4d4de0; 
-  border-radius: 10px;
+    box-shadow: inset 0 0 5px #4d4de0;
+    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -163,17 +156,10 @@ div.gradient-border {
     background: #7e7eed;
 }
 
-/* Firefox */
-
 section.list {
     scrollbar-color: #7474fd rgb(202, 190, 255);
     scrollbar-width: thin;
 }
-
-
-/* ----------------------------------------------------------------- */
-/* Operations */
-/* ----------------------------------------------------------------- */
 
 div.controls input {
     padding: 5px;
@@ -184,25 +170,21 @@ div.controls input {
     margin-top: 10px;
 }
 
-div.controls label{
-    margin-top:10px;
+div.controls label {
+    margin-top: 10px;
     text-align: end;
-    font-size:1.1em;
+    font-size: 1.1em;
     color: #0819b0;
-    
+
 }
 
 div.controls input::placeholder {
     font-style: italic;
 }
 
-/* ----------------------------------------------------------------- */
-/* Buttons */
-/* ----------------------------------------------------------------- */
-
 button.button {
     border: none;
-    background: linear-gradient(-125deg,  #0067ff, #8900e8);
+    background: linear-gradient(-125deg, #0067ff, #8900e8);
     padding: 10px;
     font-size: 1.5rem;
     font-weight: bold;
@@ -218,23 +200,24 @@ button.button:hover {
     transform: scale(1.03);
 }
 
-
-.timeandspace{
+.timeandspace {
     display: flex;
     flex-direction: column;
-    gap:5px;
-    top:0;
-    left:0;
+    gap: 5px;
+    top: 0;
+    left: 0;
     position: absolute;
 }
-.timeandspace span{
+
+.timeandspace span {
     color: rgb(65, 176, 17);
 }
 
-#debug-array-text{
-color: #979191;
-font-size:1.1em;
+#debug-array-text {
+    color: #979191;
+    font-size: 1.1em;
 }
+
 .description {
     margin: 2rem auto;
     padding: 1.5rem;
@@ -246,7 +229,8 @@ font-size:1.1em;
     line-height: 1.6;
 }
 
-.description h2, .description h3 {
+.description h2,
+.description h3 {
     font-family: 'Oswald', sans-serif;
     color: #333;
 }
@@ -313,24 +297,28 @@ footer a:hover {
     text-decoration: underline;
 }
 
-.bar span.myspan{
-    padding:2px;
+.bar span.myspan {
+    padding: 2px;
     text-align: center;
     color: aliceblue;
-    font-size:0.8em;
+    font-size: 0.8em;
 }
 
-/* Terminal Style */
 .terminal {
-    background-color: #1e1e1e; /* Dark background to simulate terminal */
-    color: #d4d4d4; /* Light grey text to simulate terminal text */
-    border-radius: 5px; /* Slight rounded corners */
+    background-color: #1e1e1e;
+    
+    color: #d4d4d4;
+    
+    border-radius: 5px;
+    
     padding: 15px;
     width: 80%;
     max-width: 700px;
     margin: 20px auto;
-    font-family: 'Consolas', 'Monaco', monospace; /* Monospaced font for the terminal look */
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Subtle shadow for a lifted look */
+    font-family: 'Consolas', 'Monaco', monospace;
+    
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -338,12 +326,15 @@ footer a:hover {
 
 .terminal label {
     font-size: 16px;
-    color: #9cdcfe; /* Light blue color for the label to mimic terminal prompts */
+    color: #9cdcfe;
+    
 }
 
 .terminal input {
-    background-color: #252526; /* Dark background for the input box */
-    color: #d4d4d4; /* Light grey text */
+    background-color: #252526;
+    
+    color: #d4d4d4;
+    
     border: none;
     padding: 8px;
     font-family: 'Consolas', 'Monaco', monospace;
@@ -354,11 +345,13 @@ footer a:hover {
 }
 
 .terminal input:focus {
-    border: 1px solid #4d90fe; /* Light blue outline when focused to simulate terminal */
+    border: 1px solid #4d90fe;
+    
 }
 
 .terminal button {
-    background-color: #007acc; /* VS Code's blue color for the button */
+    background-color: #007acc;
+    
     color: #ffffff;
     border: none;
     padding: 8px 15px;
@@ -366,17 +359,20 @@ footer a:hover {
     cursor: pointer;
     font-family: 'Consolas', 'Monaco', monospace;
     font-size: 14px;
-    align-self: flex-end; /* Position the button to the right */
+    align-self: flex-end;
+    
     transition: background-color 0.3s ease;
 }
 
 .terminal button:hover {
-    background-color: #006bb3; /* Darker blue on hover */
+    background-color: #006bb3;
+    
 }
 
 .terminal p {
     font-size: 14px;
-    color: #dcdcdc; /* Light gray color for terminal text */
+    color: #dcdcdc;
+    
 }
 
 .terminal .input-container {
@@ -385,11 +381,18 @@ footer a:hover {
     gap: 10px;
 }
 
-/* Optional: Add a blinking cursor effect for realism */
 @keyframes cursor-blink {
-    0% { border-color: transparent; }
-    50% { border-color: #d4d4d4; }
-    100% { border-color: transparent; }
+    0% {
+        border-color: transparent;
+    }
+
+    50% {
+        border-color: #d4d4d4;
+    }
+
+    100% {
+        border-color: transparent;
+    }
 }
 
 .terminal input:focus::after {

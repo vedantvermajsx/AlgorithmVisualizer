@@ -1,124 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exponential Search Visualizer</title>
-    <link rel="stylesheet" href="exponential.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exponential Search — Visualizer</title>
+  <link rel="stylesheet" href="../CSS/exponential-shared.css">
 </head>
+
 <body>
+  <header>
+    <div class="header-container">
+      <a href="../index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px;">
+        <img src="../assests/logbase10-icon-dark.svg" alt="LogBase10" width="32px">
+        <h1>Exponential <span>Search</span></h1>
+      </a>
+    </div>
+  </header>
+
+  <div class="wrapper">
+    <div class="left">
+      <div id="array-container"></div>
 
 
-        
-    <header>
-        <div class="header-container">
-            <div id="settings-menu">
-                <i class="fas fa-bars"></i>
-            </div>
-            
-            <div>
-                <h1>Exponential <span>Search</span> Visualization</h1>
-            </div>
-            
-            <div id="theme-switcher">
-                <i class="fas fa-adjust"></i>
-            </div>
-        </div>
-        <div class="gradient-border"></div>
-    </header>
 
-    <div class="wrapper">
-        <div class="left">
-            <div id="array-container"></div>
-            <div class="controls">
-                <label for="Size">Size:</label>
-                <input type="number" id="Size" placeholder="Enter Size">
-                <label for="Search">Search:</label>
-                <input type="number" id="Search" placeholder="Enter Search Element">
-                <button id="automatic" onclick="startAutomaticSort()">Automatic</button>
-                <button id="manual" onclick="setManualMode()">Manual</button>
-                <button onclick="stepSort()" id="step-button" disabled>Step</button>
-                <button onclick="resetArray()">Reset</button>
-            </div>
-            <div id="debug-panel">
-                <h2>Debug Info</h2>
-                <p id="debug-text">Press "Automatic" or "Manual" to begin searching...</p>
-            </div>
-        </div>
-        <div class="right">
-            <div id="code-container">
-                <h2>Exponential Search & Binary Search Code</h2>
-                <pre id="algorithm-code">
-<span id="code-line-1">function exponentialSearch(arr, value) {</span>
-<span id="code-line-2">    if (arr[0] === value) return 0;</span>
-<span id="code-line-3">    let bound = 1;</span>
-<span id="code-line-4">    while (bound < arr.length && arr[bound] < value) {</span>
-<span id="code-line-5">        bound *= 2;</span>
-<span id="code-line-6">    }</span>
-<span id="code-line-7">    return binarySearch(arr, value, bound / 2, Math.min(bound, arr.length - 1));</span>
-<span id="code-line-8">}</span>
+      <div class="controls">
+        <label for="Size">Size</label>
+        <input type="number" id="Size" placeholder="max 50">
+        <label for="target-val">Target</label>
+        <input type="number" id="target-val" placeholder="value">
+        <button id="automatic" onclick="startAutomaticSort()">Automatic</button>
+        <button id="manual" onclick="setManualMode()">Manual</button>
+        <button id="step-button" onclick="stepSort()" disabled>Step</button>
+        <button onclick="resetArray()">Reset</button>
+      </div>
 
-<span id="code-line-9">function binarySearch(arr, value, left, right) {</span>
-<span id="code-line-10">    while (left <= right) {</span>
-<span id="code-line-11">        let mid = Math.floor((left + right) / 2);</span>
-<span id="code-line-12">        if (arr[mid] === value) {</span>
-<span id="code-line-13">            return mid;</span>
-<span id="code-line-14">        } else if (arr[mid] < value) {</span>
-<span id="code-line-15">            left = mid + 1;</span>
-<span id="code-line-16">        } else {</span>
-<span id="code-line-17">            right = mid - 1;</span>
-<span id="code-line-18">        }</span>
-<span id="code-line-19">    }</span>
-<span id="code-line-20">    return -1;</span>
-<span id="code-line-21">}</span>
-                </pre>
-            </div>
-        </div>
+      <div id="debug-panel">
+        <h2>Status</h2>
+        <p id="debug-text">Press Automatic to begin searching…</p>
+      </div>
     </div>
 
+    <div class="right">
+      <div id="code-container">
+        <h2>Exponential Search</h2>
+        <pre id="algorithm-code"><span id="code-line-1">function exponentialSearch(arr, target) {</span>
+<span id="code-line-2">  if (arr[0] === target) return 0;</span>
+<span id="code-line-3">  let i = 1;</span>
+<span id="code-line-4">  while (i &lt; arr.length && arr[i] &lt; target) {</span>
+<span id="code-line-5">    i = i * 2;</span>
+<span id="code-line-6">  }</span>
+<span id="code-line-7">  let left = Math.floor(i / 2);</span>
+<span id="code-line-8">  let right = Math.min(i, arr.length - 1);</span>
+<span id="code-line-9">  return binarySearch(arr, target, left, right);</span>
+<span id="code-line-10">}</span>
 
-    
-    <section class="description">
-        <h2>About Exponential Search</h2>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Binary_search_algorithm_diagram.svg" 
-             alt="Exponential Search Illustration" 
-             class="description-image">
-        <p>
-            Exponential Search is an algorithm that combines the strengths of Binary Search with a dynamic approach to determine the search range. It is highly efficient for large, sorted datasets.
-        </p>
-        <p>
-            The algorithm begins by finding the range where the target element lies by repeatedly doubling the index (exponentially growing bounds). Once the range is determined, it applies Binary Search within that range to locate the target.
-        </p>
-        <h3>Key Features:</h3>
-        <ul>
-            <li><strong>Efficient:</strong> Time complexity of <code>O(log N)</code> for searching in sorted arrays.</li>
-            <li><strong>Range Discovery:</strong> Dynamically finds the subarray containing the target.</li>
-            <li><strong>Divide-and-Conquer:</strong> Utilizes Binary Search for precise element location.</li>
-        </ul>
-        <h3>Advantages:</h3>
-        <ul>
-            <li>Faster than Binary Search for large datasets with unknown boundaries.</li>
-            <li>Minimal space requirements as it operates in-place.</li>
-        </ul>
-        <h3>Disadvantages:</h3>
-        <ul>
-            <li>Requires a sorted dataset, similar to Binary Search.</li>
-            <li>Performance may degrade if the target element lies at the beginning or far outside the dataset.</li>
-        </ul>
-    </section>
-    
-
-<footer>
-    <div class="footer-content">
-        <p>© 2024 Algorithm Visualizer. All rights reserved.</p>
-        <p>
-            Built with ❤️ by [Vedant verma and Team]. Find the project on 
-            <a href="https://github.com/" target="_blank">GitHub</a>.
-        </p>
+<span id="code-line-12">function binarySearch(arr, target, left, right) {</span>
+<span id="code-line-13">  while (left &lt;= right) {</span>
+<span id="code-line-14">    let mid = Math.floor((left + right) / 2);</span>
+<span id="code-line-15">    if (arr[mid] === target) return mid;</span>
+<span id="code-line-16">    if (arr[mid] &lt; target) left = mid + 1;</span>
+<span id="code-line-17">    else right = mid - 1;</span>
+<span id="code-line-18">  }</span>
+<span id="code-line-19">  return -1;</span>
+<span id="code-line-20">}</span></pre>
+      </div>
     </div>
-</footer>
+  </div>
 
+  <div class="description">
+    <div class="description-inner">
+      <h2>About Exponential Search</h2>
+      <p>Exponential Search first finds a range where the target may exist by doubling the index, then performs Binary
+        Search within that range. Ideal for unbounded or infinite sorted arrays.</p>
+      <h3>Complexity</h3>
+      <div class="complexity-grid">
+        <div class="complexity-card">
+          <div class="label">Time</div>
+          <div class="value">O(log n)</div>
+        </div>
+        <div class="complexity-card">
+          <div class="label">Space</div>
+          <div class="value">O(1)</div>
+        </div>
+        <div class="complexity-card">
+          <div class="label">Sorted req.</div>
+          <div class="value">Yes</div>
+        </div>
+        <div class="complexity-card">
+          <div class="label">Unbounded</div>
+          <div class="value">Yes</div>
+        </div>
+      </div>
+      <h3>Visualizing Algorithm</h3>
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Exponential_Search.png/600px-Exponential_Search.png"
+        alt="Exponential Search Visualization" class="description-image"
+        style="display: block; margin: 20px auto; max-width: 600px; width: 100%;" />
+    </div>
+  </div>
 
-    <script src="exponential.js"></script>
+  <footer>
+    <img src="../assests/logbase10-wordmark.svg" alt="LogBase10" width="120px">
+    <p>© 2024 LogBase10. All rights reserved.</p>
+  </footer>
+
+  <script src="exponential.js"></script>
 </body>
+
 </html>

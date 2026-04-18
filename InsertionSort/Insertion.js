@@ -1,41 +1,53 @@
 let array = [];
-const TAndC=`<div class="timeandspace">
-            <span>Time Complexity : O(N2)</span>
-            <span>Space Complexity : O(1)</span>
-        </div>`;
 const arrayContainer = document.getElementById("array-container");
 const debugText = document.getElementById("debug-text");
 const stepButton = document.getElementById("step-button");
-let Size=0;
+let Size = 0;
 let isSorting = false;
 let isManual = false;
 let i = 1, j = 0;
-const SizeInput= document.getElementById("Size");
+const SizeInput = document.getElementById("Size");
 
-function GetSize(){
+function highlightCodeLine(line) {
+    document.querySelectorAll("#algorithm-code span").forEach((codeLine) => codeLine.classList.remove("highlight"));
+    const lineElement = document.getElementById(`code-line-${line}`);
+    if (lineElement) lineElement.classList.add("highlight");
+}
+
+function GetSize() {
     Size = parseInt(SizeInput.value);
-     SizeInput.value = '';
-    if (Size>50 || Size === "") {
-        updateDebugText("Please enter a valid size value.");
+    SizeInput.value = '';
+    if (!Size || Size > 50) {
+        updateDebugText("Please enter a valid size (max 50).");
+        return;
     }
     generateArray();
-    }
+}
 
 function generateArray() {
-    array = Array.from({ length: 40 }, () => Math.floor(Math.random() * 200) + 10);
+    array = Array.from({ length: Size || 20 }, () => Math.floor(Math.random() * 90) + 10);
     renderArray();
     resetIndices();
-    updateDebugText("New array generated. Choose 'Automatic' or 'Manual' to start sorting.");
+    updateDebugText("New array generated. Ready for sorting.");
 }
 
 function renderArray() {
-    arrayContainer.innerHTML = TAndC;
-    array.forEach((value) => {
-        const bar = document.createElement("div");
-        bar.classList.add("bar");
-        bar.style.height = `${value}px`;
-        arrayContainer.appendChild(bar);
-    });
+    const adjustedMax = Math.max(...array);
+    const bars = arrayContainer.children;
+
+    if (bars.length !== array.length) {
+        arrayContainer.innerHTML = "";
+        array.forEach((value) => {
+            const bar = document.createElement("div");
+            bar.classList.add("bar");
+            bar.style.height = `${(value / adjustedMax) * 100}%`;
+            arrayContainer.appendChild(bar);
+        });
+    } else {
+        array.forEach((value, index) => {
+            bars[index].style.height = `${(value / adjustedMax) * 100}%`;
+        });
+    }
 }
 
 function updateDebugText(message) {
@@ -44,90 +56,134 @@ function updateDebugText(message) {
 
 function resetIndices() {
     i = 1;
-    j = i;
+    j = 0; 
 }
 
-function setBarsGreen() {
+function clearBarStates() {
     const bars = document.getElementsByClassName("bar");
     Array.from(bars).forEach(bar => {
-        bar.style.backgroundColor = "green";
+        if (!bar.classList.contains("sorted")) {
+            bar.classList.remove("active", "comparing");
+        }
     });
 }
 
-// Manual mode step-by-step insertion sort
 async function manualSortStep() {
     const bars = document.getElementsByClassName("bar");
-
-    // Reset all bars to green at the beginning of each step
-    Array.from(bars).forEach(bar => bar.style.backgroundColor = "#4CAF50");
-
-    // If the array is fully sorted, indicate completion and exit
     if (i >= array.length) {
-        updateDebugText("Array is fully sorted!");
-        setBarsGreen();  // Turn all bars green when sorting is complete
+        updateDebugText("Array is fully sorted! 🎉");
+        highlightCodeLine(0);
+        Array.from(bars).forEach(bar => bar.classList.add("sorted"));
         isSorting = false;
-        stepButton.disabled = true;  // Disable the step button after sorting is complete
+        stepButton.disabled = true;
         return;
     }
 
+    clearBarStates();
+
+    highlightCodeLine(1);
+    await new Promise(resolve => setTimeout(resolve, 300));
+
     let key = array[i];
-    bars[i].style.backgroundColor = "red";  // Highlight the key element as red
+    highlightCodeLine(2);
+    bars[i].classList.add("active");
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-    // Compare key with the previous elements (insertion sort logic)
-    while (j > 0 && array[j - 1] > key) {
-        // Highlight the compared element as blue
-        bars[j - 1].style.backgroundColor = "blue";
+    highlightCodeLine(3);
+    j = i - 1;
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-        // Move the larger element one step to the right
-        array[j] = array[j - 1];
-        bars[j].style.height = `${array[j]}px`;  // Update the height of the moved bar
+    while (j >= 0 && array[j] > key) {
+        highlightCodeLine(4);
+        const currentBars = document.getElementsByClassName("bar");
+        if (currentBars[j]) currentBars[j].classList.add("comparing");
+        await new Promise(resolve => setTimeout(resolve, 400));
 
-        updateDebugText(`Moved element at index ${j - 1} to index ${j}`);
+        highlightCodeLine(5);
+        array[j + 1] = array[j];
+        renderArray();
+        const newBars = document.getElementsByClassName("bar");
+        if (newBars[j]) newBars[j].classList.add("comparing");
+        if (newBars[j + 1]) newBars[j + 1].classList.add("comparing");
+        if (newBars[i]) newBars[i].classList.add("active");
+        await new Promise(resolve => setTimeout(resolve, 400));
+        if (newBars[j]) newBars[j].classList.remove("comparing");
 
-        // Move to the previous element
+        highlightCodeLine(6);
         j--;
+        updateDebugText(`→ Shifted element to index ${j + 2}`);
+        await new Promise(resolve => setTimeout(resolve, 300));
     }
 
-    // Once the correct position for the key is found, insert it
-    array[j] = key;
-    bars[j].style.height = `${key}px`;  // Update the height for the inserted key
-    updateDebugText(`Inserted key ${key} at index ${j}`);
+    highlightCodeLine(8);
+    array[j + 1] = key;
+    renderArray();
+    updateDebugText(`✓ Inserted key ${key} at index ${j + 1}`);
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-    // Move to the next index for the key
     i++;
-    j = i;  // Reset j to the current value of i for the next iteration
+    const finalBars = document.getElementsByClassName("bar");
+    for (let k = 0; k < i; k++) {
+        if (finalBars[k]) finalBars[k].classList.add("sorted");
+    }
 }
 
-
-// Automatic insertion sort
 async function automaticSort() {
     isSorting = true;
-    const bars = document.getElementsByClassName("bar");
-
     for (let i = 1; i < array.length; i++) {
+        if (!isSorting || isManual) return;
+
+        highlightCodeLine(1);
+        await new Promise(resolve => setTimeout(resolve, 200));
         let key = array[i];
+
+        highlightCodeLine(2);
+        const startBars = document.getElementsByClassName("bar");
+        if (startBars[i]) startBars[i].classList.add("active");
+        await new Promise(resolve => setTimeout(resolve, 300));
+
         let j = i - 1;
-        
-        bars[i].style.backgroundColor = "red";
+        highlightCodeLine(3);
+        await new Promise(resolve => setTimeout(resolve, 200));
 
         while (j >= 0 && array[j] > key) {
-            bars[j].style.backgroundColor = "blue";
+            if (!isSorting || isManual) return;
+
+            highlightCodeLine(4);
+            const currentBars = document.getElementsByClassName("bar");
+            if (currentBars[j]) currentBars[j].classList.add("comparing");
+            await new Promise(resolve => setTimeout(resolve, 400));
+
+            highlightCodeLine(5);
             array[j + 1] = array[j];
-            bars[j + 1].style.height = `${array[j + 1]}px`;
+            renderArray();
+            const newBars = document.getElementsByClassName("bar");
+            if (newBars[j]) newBars[j].classList.add("comparing");
+            if (newBars[j + 1]) newBars[j + 1].classList.add("comparing");
+
+            highlightCodeLine(6);
             j--;
-
-            await new Promise((resolve) => setTimeout(resolve, 300));
+            updateDebugText(`→ Shifting — key: ${key}`);
+            await new Promise(resolve => setTimeout(resolve, 400));
         }
-        array[j + 1] = key;
-        bars[j + 1].style.height = `${key}px`;
-        bars[i].style.backgroundColor = "#4CAF50";
-        updateDebugText(`Inserted key ${key} at index ${j + 1}`);
 
-        if (!isSorting) return;
+        highlightCodeLine(8);
+        array[j + 1] = key;
+        renderArray();
+
+        const afterBars = document.getElementsByClassName("bar");
+        for (let k = 0; k <= i; k++) {
+            if (afterBars[k]) afterBars[k].classList.add("sorted");
+        }
+        updateDebugText(`✓ Inserted key ${key} at index ${j + 1}`);
+        await new Promise(resolve => setTimeout(resolve, 500));
     }
 
-    setBarsGreen();  // Turn all bars green when sorting is complete
-    updateDebugText("Array is fully sorted!");
+    const finalBars = document.getElementsByClassName("bar");
+    Array.from(finalBars).forEach(bar => bar.classList.add("sorted"));
+    highlightCodeLine(0);
+    updateDebugText("✅ Array fully sorted!");
+    isSorting = false;
 }
 
 function setManualMode() {
@@ -135,12 +191,17 @@ function setManualMode() {
     isSorting = false;
     stepButton.disabled = false;
     resetIndices();
-    updateDebugText("Manual mode activated. Use 'Step' to go forward.");
+    renderArray();
+    updateDebugText("Manual mode activated. Use 'Step' to proceed.");
 }
 
-function stepSort() {
+async function stepSort() {
     if (isManual) {
-        manualSortStep();
+        stepButton.disabled = true;
+        await manualSortStep();
+        const bars = document.getElementsByClassName("bar");
+        const allSorted = Array.from(bars).every(b => b.classList.contains("sorted"));
+        if (!allSorted) stepButton.disabled = false;
     }
 }
 
@@ -148,6 +209,7 @@ function startAutomaticSort() {
     if (!isSorting) {
         isManual = false;
         stepButton.disabled = true;
+        resetIndices();
         automaticSort();
     }
 }
@@ -155,7 +217,10 @@ function startAutomaticSort() {
 function resetArray() {
     isSorting = false;
     isManual = false;
+    stepButton.disabled = true;
+    highlightCodeLine(0);
     generateArray();
 }
 
 SizeInput.addEventListener('change', GetSize);
+generateArray();

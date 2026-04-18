@@ -1,226 +1,141 @@
 let array = [];
-const TANDC= `<div class="timeandspace">
-<span>Time Complexity : O(nlog(n))</span>
-<span>Space Complexity : O(n)</span>
-</div>`;
 const arrayContainer = document.getElementById("array-container");
 const debugText = document.getElementById("debug-text");
-const stepButton = document.getElementById("step-button");
-
+const SizeInput = document.getElementById("Size");
 let Size = 0;
 let isSorting = false;
-let isManual = false;
-let currentLeft = 0,
-    currentRight = 0;
-let speed = 200; // Initial speed for automatic sort
-let currentStack = []; // Stack to manage recursive calls for manual mode
-const SizeInput = document.getElementById("Size");
+
+function highlightCodeLine(line) {
+    document.querySelectorAll("#algorithm-code span").forEach((codeLine) => codeLine.classList.remove("highlight"));
+    const lineElement = document.getElementById(`code-line-${line}`);
+    if (lineElement) lineElement.classList.add("highlight");
+}
 
 function GetSize() {
     Size = parseInt(SizeInput.value);
-    SizeInput.value = "";
-    if (Size > 50 || Size === "" || Size <= 0) {
-        updateDebugText("Please enter a valid size value between 1 and 50.");
+    SizeInput.value = '';
+    if (!Size || Size > 50) {
+        updateDebugText("Please enter a valid size (max 50).");
         return;
     }
     generateArray();
 }
 
 function generateArray() {
-    array = Array.from({ length: Size }, () => Math.floor(Math.random() * 200) + 10);
+    array = Array.from({ length: Size || 20 }, () => Math.floor(Math.random() * 100) + 10);
     renderArray();
-    resetIndices();
-    updateDebugText("New array generated. Choose 'Automatic' or 'Manual' to start sorting.");
+    updateDebugText("New array generated. Ready for sorting.");
 }
 
 function renderArray() {
-    const maxValue = Math.max(...array); // Find the maximum value for scaling
-    arrayContainer.innerHTML = TANDC;
-    array.forEach((value) => {
-        const bar = document.createElement("div");
-        bar.classList.add("bar");
-        bar.style.height = `${(value / maxValue) * 100}%`; // Scale height as a percentage
-        arrayContainer.appendChild(bar);
-    });
+    const adjustedMax = Math.max(...array);
+    const bars = arrayContainer.children;
+    if (bars.length !== array.length) {
+        arrayContainer.innerHTML = "";
+        array.forEach((value) => {
+            const bar = document.createElement("div");
+            bar.classList.add("bar");
+            bar.style.height = `${(value / adjustedMax) * 100}%`;
+            arrayContainer.appendChild(bar);
+        });
+    } else {
+        array.forEach((value, index) => {
+            bars[index].style.height = `${(value / adjustedMax) * 100}%`;
+        });
+    }
 }
 
 function updateDebugText(message) {
     debugText.innerText = message;
 }
 
-function resetIndices() {
-    currentLeft = 0;
-    currentRight = array.length - 1;
-    currentStack = [];
-}
+async function merge(l, m, r) {
+    highlightCodeLine(8);
+    let n1 = m - l + 1;
+    let n2 = r - m;
 
-function setBarsGreen() {
+    let L = new Array(n1);
+    let R = new Array(n2);
+
+    for (let i = 0; i < n1; i++) L[i] = array[l + i];
+    for (let j = 0; j < n2; j++) R[j] = array[m + 1 + j];
+
+    let i = 0, j = 0, k = l;
     const bars = document.getElementsByClassName("bar");
-    Array.from(bars).forEach((bar) => {
-        bar.style.backgroundColor = "green";
-    });
-}
 
-async function manualMergeSortStep() {
-    if (!currentStack.length) {
-        currentStack.push({ left: currentLeft, right: currentRight });
-    }
+    while (i < n1 && j < n2) {
+        highlightCodeLine(9);
+        bars[l + i].classList.add("comparing");
+        bars[m + 1 + j].classList.add("comparing");
+        await new Promise(resolve => setTimeout(resolve, 200));
 
-    const { left, right } = currentStack.pop();
-    if (left >= right) return;
-
-    const mid = Math.floor((left + right) / 2);
-    currentStack.push({ left: mid + 1, right }); // Right part
-    currentStack.push({ left, right: mid }); // Left part
-    highlightSubarrays(left, mid, right);
-
-    // Merge step
-    stepButton.disabled=true;
-    await Manualmerge(left, mid, right);
-    renderArray();
-
-    if (!currentStack.length) {
-        setBarsGreen();
-        updateDebugText("Array is fully sorted!");
-        isSorting = false;
-        stepButton.disabled = true;
-    }
-}
-
-async function mergeSortStep(left, right) {
-    if (left >= right) return;
-
-    const mid = Math.floor((left + right) / 2);
-    await mergeSortStep(left, mid);
-    await mergeSortStep(mid + 1, right);
-    await merge(left, mid, right);
-}
-
-
-async function Manualmerge(left, mid, right) {
-    const bars = document.getElementsByClassName("bar");
-    const tempArray = [];
-    let i = left,
-        j = mid + 1;
-
-    while (i <= mid && j <= right) {
-        if (array[i] <= array[j]) {
-            tempArray.push(array[i]);
-            bars[i].style.backgroundColor = "blue";
+        if (L[i] <= R[j]) {
+            array[k] = L[i];
             i++;
         } else {
-            tempArray.push(array[j]);
-            bars[j].style.backgroundColor = "blue";
+            array[k] = R[j];
             j++;
         }
-        await sleep(speed);
+        renderArray();
+        const newBars = document.getElementsByClassName("bar");
+        newBars[k].classList.add("active");
+        k++;
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    while (i <= mid) {
-        tempArray.push(array[i]);
+    while (i < n1) {
+        array[k] = L[i];
         i++;
+        k++;
+        renderArray();
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    while (j <= right) {
-        tempArray.push(array[j]);
+    while (j < n2) {
+        array[k] = R[j];
         j++;
-    }
-
-    for (let k = left; k <= right; k++) {
-        array[k] = tempArray[k - left];
-        bars[k].style.height = `${(array[k] / Math.max(...array)) * 100}%`;
-        bars[k].style.backgroundColor = "lightgreen";
-    }
-    stepButton.disabled=false;
-}
-
-
-
-
-function highlightSubarrays(left, mid, right) {
-    const bars = document.getElementsByClassName("bar");
-    for (let i = left; i <= mid; i++) {
-        bars[i].style.backgroundColor = "yellow";
-    }
-    for (let i = mid + 1; i <= right; i++) {
-        bars[i].style.backgroundColor = "orange";
+        k++;
+        renderArray();
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
 }
 
-async function merge(left, mid, right) {
-    const bars = document.getElementsByClassName("bar");
-    const tempArray = [];
-    let i = left,
-        j = mid + 1;
-
-    while (i <= mid && j <= right) {
-        if (array[i] <= array[j]) {
-            tempArray.push(array[i]);
-            bars[i].style.backgroundColor = "blue";
-            i++;
-        } else {
-            tempArray.push(array[j]);
-            bars[j].style.backgroundColor = "blue";
-            j++;
-        }
-        await sleep(speed);
+async function mergeSort(l, r) {
+    highlightCodeLine(1);
+    if (l >= r) {
+        highlightCodeLine(2);
+        return;
     }
-
-    while (i <= mid) {
-        tempArray.push(array[i]);
-        i++;
-    }
-
-    while (j <= right) {
-        tempArray.push(array[j]);
-        j++;
-    }
-
-    for (let k = left; k <= right; k++) {
-        array[k] = tempArray[k - left];
-        bars[k].style.height = `${(array[k] / Math.max(...array)) * 100}%`;
-        bars[k].style.backgroundColor = "lightgreen";
-    }
-    await sleep(speed);
+    let m = l + Math.floor((r - l) / 2);
+    highlightCodeLine(3);
+    
+    highlightCodeLine(4);
+    await mergeSort(l, m);
+    
+    highlightCodeLine(5);
+    await mergeSort(m + 1, r);
+    
+    highlightCodeLine(6);
+    await merge(l, m, r);
 }
 
-function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function setManualMode() {
-    isManual = true;
-    isSorting = false;
-    stepButton.disabled = false;
-    resetIndices();
-    updateDebugText("Manual mode activated. Use 'Step' to go forward.");
-}
-
-function stepSort() {
-    if (isManual) {
-        manualMergeSortStep();
-    }
-}
-
-async function automaticMergeSort() {
-    isSorting = true;
-    await mergeSortStep(currentLeft, currentRight);
-    setBarsGreen();
-    updateDebugText("Merge sort completed!");
-}
-
-function startAutomaticSort() {
+async function startAutomaticSort() {
     if (!isSorting) {
-        isManual = false;
-        stepButton.disabled = true;
-        automaticMergeSort();
+        isSorting = true;
+        await mergeSort(0, array.length - 1);
+        const bars = document.getElementsByClassName("bar");
+        Array.from(bars).forEach(bar => bar.classList.add("sorted"));
+        highlightCodeLine(0);
+        updateDebugText("Array fully sorted!");
+        isSorting = false;
     }
 }
 
 function resetArray() {
     isSorting = false;
-    isManual = false;
+    highlightCodeLine(0);
     generateArray();
 }
 
-SizeInput.addEventListener("change", GetSize);
+SizeInput.addEventListener('change', GetSize);
+generateArray();

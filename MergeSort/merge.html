@@ -1,109 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Merge Sort Visualizer with Debug and Step Modes</title>
-    <link rel="stylesheet" href="../CSS/Sortings.css">
-    <link
-    href="https://fonts.googleapis.com/css?family=Oswald&display=swap"
-    rel="stylesheet"
-/>
-<link 
-    href="https://fonts.googleapis.com/css?family=Livvic&display=swap"
-    rel="stylesheet"
-/>
-<link 
-    href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" 
-    rel="stylesheet"
-/>
-<title>Merge Sort Visualization</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merge Sort — Visualizer</title>
+  <link rel="stylesheet" href="../CSS/exponential-shared.css">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <div id="settings-menu">
-                <i class="fas fa-bars"></i>
-            </div>
-            
-            <div>
-                <h1>Merge <span>Sort</span> Visualization</h1>
-            </div>
-            
-            <div id="theme-switcher">
-                <i class="fas fa-adjust"></i>
-            </div>
-        </div>
-        <div class="gradient-border"></div>
-    </header>
+  <header>
+    <div class="header-container">
+      <a href="../index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px;">
+        <img src="../assests/logbase10-icon-dark.svg" alt="LogBase10" width="32px">
+        <h1>Merge <span>Sort</span></h1>
+      </a>
+    </div>
+  </header>
 
-    
-    <main> 
-   
-        <section style="display: grid;place-items: center;">
-        <div id="array-container">
-          
-        </div>
-    
-    <div class="controls">
-        <label for="Size">Size:</label>
-        <input type="number" id="Size" placeholder="Enter Size">
+  <div class="wrapper">
+    <div class="left">
+      <div id="array-container"></div>
+
+
+
+      <div class="controls">
+        <label for="Size">Size</label>
+        <input type="number" id="Size" placeholder="max 50">
         <button onclick="startAutomaticSort()">Automatic</button>
-        <button onclick="setManualMode()">Manual</button>
-        <button onclick="stepSort()" id="step-button" disabled>Step</button>
         <button onclick="resetArray()">Reset</button>
+      </div>
+
+      <div id="debug-panel">
+        <h2>Status</h2>
+        <p id="debug-text">Press Automatic to begin sorting…</p>
+      </div>
     </div>
-    
-    <div id="debug-panel">
-        <h2>Debug Info</h2>
-        <p id="debug-text">Press "Automatic" or "Manual" to begin sorting...</p>
+
+    <div class="right">
+      <div id="code-container">
+        <h2>Merge Sort</h2>
+        <pre id="algorithm-code"><span id="code-line-1">function mergeSort(arr, left, right) {</span>
+<span id="code-line-2">  if (left &lt; right) {</span>
+<span id="code-line-3">    let mid = Math.floor((left + right) / 2);</span>
+<span id="code-line-4">    mergeSort(arr, left, mid);</span>
+<span id="code-line-5">    mergeSort(arr, mid + 1, right);</span>
+<span id="code-line-6">    merge(arr, left, mid, right);</span>
+<span id="code-line-7">  }</span>
+<span id="code-line-8">}</span>
+<span id="code-line-9">function merge(arr, left, mid, right) {</span>
+<span id="code-line-10">  let L = arr.slice(left, mid + 1);</span>
+<span id="code-line-11">  let R = arr.slice(mid + 1, right + 1);</span>
+<span id="code-line-12">  let i = 0, j = 0, k = left;</span>
+<span id="code-line-13">  while (i &lt; L.length &amp;&amp; j &lt; R.length)</span>
+<span id="code-line-14">    arr[k++] = L[i] &lt;= R[j] ? L[i++] : R[j++];</span>
+<span id="code-line-15">}</span></pre>
+      </div>
     </div>
-</section >
-<section class="description">
-    <h2>About Merge Sort</h2>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Merge_sort_algorithm_diagram.svg" 
-         alt="Merge Sort Visualization" 
-         class="description-image">
-    <p>
-        Merge Sort is a divide-and-conquer algorithm that splits the list into smaller sublists, sorts each sublist, and then merges them back together. The algorithm repeatedly divides the array in half until each sublist contains a single element and then merges them back together in sorted order.
-    </p>
-    <p>
-        The merge process ensures that the resulting list is sorted because it repeatedly merges smaller sorted lists into larger ones.
-    </p>
-    <h3>Key Features:</h3>
-    <ul>
-        <li><strong>Divide and Conquer:</strong> The list is divided into smaller parts and solved recursively.</li>
-        <li><strong>Stable Sorting:</strong> Maintains the order of equal elements.</li>
-        <li><strong>Efficient for large datasets:</strong> Has an optimal time complexity.</li>
-    </ul>
-    <h3>Advantages:</h3>
-    <ul>
-        <li>Time complexity of <code>O(N log N)</code> in the best, worst, and average cases.</li>
-        <li>Stable and efficient for large datasets.</li>
-        <li>Works well on linked lists.</li>
-    </ul>
-    <h3>Disadvantages:</h3>
-    <ul>
-        <li>Requires additional space for merging, which is <code>O(N)</code>.</li>
-        <li>Not suitable for smaller datasets where simpler algorithms like QuickSort or Insertion Sort may perform better.</li>
-    </ul>
-</section>
+  </div>
 
-</main>
-
-
-
-<footer>
-    <div class="footer-content">
-        <p>© 2024 Algorithm Visualizer. All rights reserved.</p>
-        <p>
-            Built with ❤️ by [Vedant verma and Team]. Find the project on 
-            <a href="https://github.com/" target="_blank">GitHub</a>.
-        </p>
+  <div class="description">
+    <div class="description-inner">
+      <h2>About Merge Sort</h2>
+      <p>Merge Sort is a stable divide-and-conquer algorithm. It divides the array into halves, recursively sorts each half, then merges them back together in sorted order.</p>
+      <h3>Complexity</h3>
+      <div class="complexity-grid">
+        <div class="complexity-card"><div class="label">Time (all)</div><div class="value">O(n log n)</div></div>
+        <div class="complexity-card"><div class="label">Space</div><div class="value">O(n)</div></div>
+        <div class="complexity-card"><div class="label">Stable</div><div class="value">Yes</div></div>
+        <div class="complexity-card"><div class="label">Method</div><div class="value">Divide</div></div>
+      </div>
+      <h3>Visualizing Algorithm</h3>
+      <img src="https://media.geeksforgeeks.org/wp-content/uploads/20250923102849709166/arr_.webp" alt="Merge Sort Visualization" class="description-image" style="display: block; margin: 20px auto; max-width: 600px; width: 100%;" />
     </div>
-</footer>
+  </div>
 
-    
-    <script src="merge.js"></script>
+  <footer>
+    <img src="../assests/logbase10-wordmark.svg" alt="LogBase10" width="120px">
+    <p>© 2024 LogBase10. All rights reserved.</p>
+  </footer>
+
+  <script src="merge.js"></script>
 </body>
 </html>

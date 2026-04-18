@@ -1,117 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bubble Sort Visualizer with Debug and Step Modes</title>
-    <link rel="stylesheet" href="../CSS/Sortings.css">
-    <link
-    href="https://fonts.googleapis.com/css?family=Oswald&display=swap"
-    rel="stylesheet"
-/>
-<link 
-    href="https://fonts.googleapis.com/css?family=Livvic&display=swap"
-    rel="stylesheet"
-/>
-<link  href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet"
-/>
-<title>Bubble Sort Visualization</title>
-
-<style>
-    .bar{
-        background-color: rgb(39, 151, 39);
-    }
-</style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bubble Sort — Visualizer</title>
+  <link rel="stylesheet" href="../CSS/exponential-shared.css">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <div id="settings-menu">
-                <i class="fas fa-bars"></i>
-            </div>
-            
-            <div>
-                <h1>Bubble <span>Sort</span> Visualization</h1>
-            </div>
-            
-            <div id="theme-switcher">
-                <i class="fas fa-adjust"></i>
-            </div>
-        </div>
-        <div class="gradient-border"></div>
-    </header>
+  <header>
+    <div class="header-container">
+      <a href="../index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px;">
+        <img src="../assests/logbase10-icon-dark.svg" alt="LogBase10" width="32px">
+        <h1>Bubble <span>Sort</span></h1>
+      </a>
+    </div>
+  </header>
 
-    
-    <main> 
+  <div class="wrapper">
+    <div class="left">
+      <div id="array-container"></div>
 
-   
-        <section style="display: grid;place-items: center;">
-        <div id="array-container">
-    
-          
-        </div>
-    
-    <div class="controls">
-        <label for="Size">Size:</label>
-        <input type="number" id="Size" placeholder="Enter Size">
+
+
+      <div class="controls">
+        <label for="Size">Size</label>
+        <input type="number" id="Size" placeholder="max 50">
         <button onclick="startAutomaticSort()">Automatic</button>
         <button onclick="setManualMode()">Manual</button>
         <button onclick="stepSort()" id="step-button" disabled>Step</button>
         <button onclick="resetArray()">Reset</button>
-    </div>
-    
-    <div class="terminal">
-    <label for="ArrayInput">Array Input:</label>
-    <input type="text" id="Array-input" placeholder="Array values">
-    <button id="ok-button">OK</button>
-</div>
-    <div id="debug-panel">
-        <h2>Debug Info</h2>
-        <p id="debug-text">Press "Automatic" or "Manual" to begin sorting...</p>
-    </div>
-</section >
+      </div>
 
-<section class="description">
-    <h2>About Bubble Sort</h2>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Bubble-sort-example-300px.gif" alt="Bubble Sort Animation" class="description-image">
-    <p>
-        Bubble Sort is one of the simplest sorting algorithms that works by repeatedly stepping through the list, comparing adjacent elements, and swapping them if they are in the wrong order. This process is repeated until the list is sorted. 
-    </p>
-    <p>
-        The algorithm gets its name because smaller elements "bubble" to the top of the list while larger elements sink to the bottom with each iteration.
-    </p>
-    <h3>Key Features:</h3>
-    <ul>
-        <li><strong>Comparison-based:</strong> Compares each pair of adjacent elements.</li>
-        <li><strong>In-place Sorting:</strong> Does not require extra space for sorting.</li>
-        <li><strong>Stable:</strong> Maintains the relative order of equal elements.</li>
-    </ul>
-    <h3>Advantages:</h3>
-    <ul>
-        <li>Simple and easy to implement.</li>
-        <li>Useful for small datasets.</li>
-    </ul>
-    <h3>Disadvantages:</h3>
-    <ul>
-        <li>Not suitable for large datasets due to poor performance.</li>
-        <li>Time complexity of <code>O(N<sup>2</sup>)</code> in the worst and average cases.</li>
-    </ul>
-</section>
-</main>
-
-<footer>
-    <div class="footer-content">
-        <p>© 2024 Algorithm Visualizer. All rights reserved.</p>
-        <p>
-            Built with ❤️ by [Vedant verma and Team]. Find the project on 
-            <a href="https://github.com/" target="_blank">GitHub</a>.
-        </p>
+      <div id="debug-panel">
+        <h2>Status</h2>
+        <p id="debug-text">Press Automatic or Manual to begin sorting…</p>
+      </div>
     </div>
-</footer>
 
-<script type="module" src="../Modules/utils.js"></script>
-    <script src="bubble.js"></script>
-     
+    <div class="right">
+      <div id="code-container">
+        <h2>Bubble Sort</h2>
+        <pre id="algorithm-code"><span id="code-line-1">for (let i = 0; i &lt; n - 1; i++) {</span>
+<span id="code-line-2">  for (let j = 0; j &lt; n - i - 1; j++) {</span>
+<span id="code-line-3">    if (arr[j] &gt; arr[j + 1]) {</span>
+<span id="code-line-4">      let temp = arr[j];</span>
+<span id="code-line-5">      arr[j] = arr[j + 1];</span>
+<span id="code-line-6">      arr[j + 1] = temp;</span>
+<span id="code-line-7">    }</span>
+<span id="code-line-8">  }</span>
+<span id="code-line-9">}</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="description">
+    <div class="description-inner">
+      <h2>About Bubble Sort</h2>
+      <img src="https://media.geeksforgeeks.org/wp-content/uploads/20240925153535/bubble-sort-1.webp" alt="Bubble Sort Animation" class="description-image" style="display: block; margin: 20px auto; max-width: 600px; width: 100%;">
+      <p>Bubble Sort repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order. The pass through the list is repeated until the list is sorted.</p>
+      <h3>Complexity</h3>
+      <div class="complexity-grid">
+        <div class="complexity-card"><div class="label">Time (avg)</div><div class="value">O(n²)</div></div>
+        <div class="complexity-card"><div class="label">Time (best)</div><div class="value">O(n)</div></div>
+        <div class="complexity-card"><div class="label">Space</div><div class="value">O(1)</div></div>
+        <div class="complexity-card"><div class="label">Stable</div><div class="value">Yes</div></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <img src="../assests/logbase10-wordmark.svg" alt="LogBase10" width="120px">
+    <p>© 2024 LogBase10. All rights reserved.</p>
+  </footer>
+
+  <script src="bubble.js"></script>
 </body>
 </html>

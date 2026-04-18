@@ -1,306 +1,130 @@
-const numRows = 20;
-const numCols = 50;
+import * as GridModule from "../Modules/GridModule.js";
+import { ModulegenerateMaze } from "../Modules/generateMaze.js";
+
+const numRows = GridModule.numRows;
+const numCols = GridModule.numCols;
 let grid = [];
 let startNode = null;
 let endNode = null;
 let openSet = [];
-let closedSet = [];
-let path = [];
 let isMouseDown = false;
+let isRunning = false;
+let isSearching = false;
 
 const gridContainer = document.getElementById("grid-container");
-const nextButton = document.getElementById("next-button");
-const startAutomaticButton = document.getElementById("start-automatic");
+const startButton = document.getElementById("start-automatic");
+const resetButton = document.querySelectorAll(".controls .btn")[1];
+const generateButton = document.querySelectorAll(".controls .btn")[2];
 const debugText = document.getElementById("debug-text");
 
-// Event Listeners for mouse dragging to add walls
-gridContainer.addEventListener('mousedown', () => isMouseDown = true);
-gridContainer.addEventListener('mouseup', () => isMouseDown = false);
-gridContainer.addEventListener('mouseleave', () => isMouseDown = false);
+gridContainer.addEventListener("mousedown", () => (isMouseDown = true));
+gridContainer.addEventListener("mouseup", () => (isMouseDown = false));
+gridContainer.addEventListener("mouseleave", () => (isMouseDown = false));
 
-// Initialize Grid
+startButton.addEventListener("click", startDijkstra);
+resetButton.addEventListener("click", resetGrid);
+generateButton.addEventListener("click", () => {
+    ModulegenerateMaze(numRows, numCols, grid);
+    debugText.innerText = "Random maze generated!";
+});
+
 function createGrid() {
-    gridContainer.innerHTML = ''; // Clear previous grid
+    gridContainer.innerHTML = "";
     grid = [];
-    
-    // Set grid dimensions dynamically
     gridContainer.style.gridTemplateColumns = `repeat(${numCols}, 18px)`;
     gridContainer.style.gridTemplateRows = `repeat(${numRows}, 18px)`;
-    
+
     for (let row = 0; row < numRows; row++) {
         let gridRow = [];
         for (let col = 0; col < numCols; col++) {
-            const cell = createCell(row, col);
+            const cell = GridModule.createCell(row, col);
             gridRow.push(cell);
-            const div = createCellDiv(cell);
+            const div = GridModule.createCellDiv(
+                cell, 
+                gridContainer, 
+                () => isRunning, 
+                () => isMouseDown, 
+                handleCellClick
+            );
             gridContainer.appendChild(div);
         }
         grid.push(gridRow);
     }
-    
-    assignNeighbors();
+    GridModule.assignNeighbors(grid, numRows, numCols);
 }
 
-// Create a new cell object
-function createCell(row, col) {
-    return {
-        row,
-        col,
-        isStart: false,
-        isEnd: false,
-        isWall: false,
-        f: Infinity,
-        g: Infinity,
-        previous: null,
-        visited: false,
-        neighbors: []
-    };
-}
-
-// Create a div element for each cell
-function createCellDiv(cell) {
-    const div = document.createElement('div');
-    div.classList.add('cell');
-    div.dataset.row = cell.row;
-    div.dataset.col = cell.col;
-    div.addEventListener('click', () => handleCellClick(div, cell));
-    div.addEventListener('mousemove', () => handleCellDrag(div, cell));
-    return div;
-}
-
-// Assign neighbors to each cell
-function assignNeighbors() {
-    for (let row = 0; row < numRows; row++) {
-        for (let col = 0; col < numCols; col++) {
-            const node = grid[row][col];
-            if (row > 0) node.neighbors.push(grid[row - 1][col]); // up
-            if (row < numRows - 1) node.neighbors.push(grid[row + 1][col]); // down
-            if (col > 0) node.neighbors.push(grid[row][col - 1]); // left
-            if (col < numCols - 1) node.neighbors.push(grid[row][col + 1]); // right
-        }
-    }
-}
-
-// Handle cell click event (for start/end/wall)
 function handleCellClick(div, cell) {
     if (!startNode) {
-        setStartNode(cell, div);
+        startNode = cell;
+        GridModule.setStartNode(cell, div);
     } else if (!endNode) {
-        setEndNode(cell, div);
+        endNode = cell;
+        GridModule.setEndNode(cell, div);
     } else if (!cell.isStart && !cell.isEnd) {
-        toggleWall(cell, div);
+        GridModule.toggleWall(cell, div);
     }
 }
 
-// Set the start node
-function setStartNode(cell, div) {
-    startNode = cell;
-    cell.isStart = true;
-    div.classList.add('start');
-}
-
-// Set the end node
-function setEndNode(cell, div) {
-    endNode = cell;
-    cell.isEnd = true;
-    div.classList.add('end');
-}
-
-// Toggle the wall state of a cell
-function toggleWall(cell, div) {
-    cell.isWall = !cell.isWall;
-    div.classList.toggle('wall', cell.isWall);
-}
-
-// Handle cell drag event (to create walls)
-function handleCellDrag(div, cell) {
-    if (isMouseDown && !cell.isStart && !cell.isEnd && !cell.isWall) {
-        cell.isWall = true;
-        div.classList.add('wall');
-    }
-}
-
-// Reset grid to initial state
 function resetGrid() {
-    gridContainer.innerHTML = '';
     createGrid();
-    resetState();
-    debugText.innerText = 'Click "Start Manual" or "Start Automatic" to begin.';
-}
-
-// Reset all variables to initial state
-function resetState() {
+    isRunning = false;
     startNode = null;
     endNode = null;
     openSet = [];
-    closedSet = [];
-    path = [];
-    isMouseDown = false;
-    nextButton.disabled = false;
-    startAutomaticButton.disabled = false;
+    isRunning = false;
+    isSearching = false;
+    startButton.disabled = false;
+    debugText.innerText = 'Click "Start" to begin.';
 }
 
-// Dijkstra's Algorithm's main logic
-function startManual() {
+async function startDijkstra() {
     if (!startNode || !endNode) {
-        alert('Please select both start and end nodes.');
+        alert("Please select both start and end nodes.");
         return;
     }
 
-    openSet = [startNode];
+    isRunning = true;
+    isSearching = true;
     startNode.g = 0;
-    startNode.f = startNode.g; // Dijkstra: f = g
+    startNode.visited = true;
 
-    nextButton.disabled = false;
-    startAutomaticButton.disabled = true;
-    debugText.innerText = 'Manual mode started. Click "Next Step" to proceed.';
+    startButton.disabled = true;
+    debugText.innerText = "Dijkstra's Algorithm started...";
+
+    spawnWorker(startNode);
 }
 
-function nextStep() {
-    if (openSet.length === 0) {
-        debugText.innerText = 'No path found.';
-        return;
-    }
-
-    openSet.sort((a, b) => a.g - b.g); // Sort by g (Dijkstra)
-    const current = openSet.shift();
-    current.visited = true;
+function spawnWorker(current) {
+    if (!isRunning || !isSearching) return;
 
     if (current === endNode) {
-        reconstructPath();
+        isSearching = false;
+        GridModule.reconstructPath(endNode, startNode, debugText, () => isRunning);
         return;
     }
 
-    updateNeighbors(current);
-    markAsVisited(current);
-    debugText.innerText = `Visiting node at (${current.row}, ${current.col})`;
-}
-
-function updateNeighbors(current) {
-    current.neighbors.forEach(neighbor => {
-        if (!neighbor.visited && !neighbor.isWall) {
-            const tempG = current.g + 1;
-            if (tempG < neighbor.g) {
-                neighbor.previous = current;
-                neighbor.g = tempG;
-                neighbor.f = neighbor.g; // Dijkstra: f = g
-                if (!openSet.includes(neighbor)) openSet.push(neighbor);
-            }
-        }
-    });
-}
-
-function markAsVisited(current) {
-    const cellDiv = document.querySelector(`[data-row="${current.row}"][data-col="${current.col}"]`);
-    cellDiv.classList.add('visited');
-    animateFollowingNodes(current);
-}
-
-function animateFollowingNodes(current) {
-    const cellDiv = document.querySelector(`[data-row="${current.row}"][data-col="${current.col}"]`);
-    
-    // Apply the color animation to show it following its neighbors
-    cellDiv.style.transition = "background-color 0.4s ease, transform 0.4s ease";
-    cellDiv.style.backgroundColor = 'rgba(255, 255, 0, 0.7)'; // Yellow flow color
-    cellDiv.style.transform = "scale(1.1)"; // Slight enlargement for animation effect
-    
     setTimeout(() => {
-        cellDiv.style.transform = "scale(1)";
-    }, 400);
-}
+        if (!isRunning || !isSearching) return;
+        debugText.innerText = "Workers actively exploring (Dijkstra)...";
 
-function reconstructPath() {
-    let temp = endNode;
-    const delay = 100; // Delay for path animation
+        current.neighbors.forEach((neighbor) => {
+            if (!neighbor.isWall) {
+                const tempG = current.g + 1;
+                if (tempG < neighbor.g) {
+                    neighbor.previous = current;
+                    neighbor.g = tempG;
 
-    // Animation for path reconstruction (highlight one by one)
-    while (temp.previous) {
-        path.unshift(temp);
-        temp = temp.previous;
-    }
-    
-    path.forEach((node, index) => {
-        setTimeout(() => {
-            const nodeDiv = document.querySelector(`[data-row="${node.row}"][data-col="${node.col}"]`);
-            // Color the node as part of the path
-            nodeDiv.classList.add('path');
-            nodeDiv.style.transition = "background-color 0.3s ease, transform 0.3s ease";
-            nodeDiv.style.backgroundColor = 'rgba(0, 0, 255, 0.7)'; // Path color
-            nodeDiv.style.transform = "scale(1.2)"; // Slight scaling animation for visual effect
-            setTimeout(() => {
-                nodeDiv.style.transform = "scale(1)";
-            }, 300);
-        }, index * delay);
-    });
-
-    // Ensure start node is included in the path with color
-    const startDiv = document.querySelector(`[data-row="${startNode.row}"][data-col="${startNode.col}"]`);
-    startDiv.classList.add('path');
-    startDiv.style.backgroundColor = 'rgba(0, 0, 255, 0.7)'; // Path color for start node
-    
-    debugText.innerText = 'Path found!';
-    nextButton.disabled = true;
-}
-
-
-// Automatic mode logic
-async function startAutomatic() {
-    if (!startNode || !endNode) {
-        alert('Please select both start and end nodes.');
-        return;
-    }
-
-    openSet = [startNode];
-    startNode.g = 0;
-    startNode.f = startNode.g; // Dijkstra: f = g
-
-    nextButton.disabled = true;
-    startAutomaticButton.disabled = true;
-    debugText.innerText = 'Automatic mode started. Please wait for the algorithm to finish.';
-
-    while (openSet.length > 0) {
-        openSet.sort((a, b) => a.g - b.g); // Sort by g (Dijkstra)
-        const current = openSet.shift();
-        current.visited = true;
-
-        if (current === endNode) {
-            reconstructPath();
-            return;
-        }
-
-        updateNeighbors(current);
-        markAsVisited(current);
-        debugText.innerText = `Visiting node at (${current.row}, ${current.col})`;
-
-        await new Promise(resolve => setTimeout(resolve, 10));
-    }
-
-    debugText.innerText = 'No path found.';
-}
-
-function generateMaze() {
-    resetState(); // Clear existing state to prevent conflicts
-    for (let row = 0; row < numRows; row++) {
-        for (let col = 0; col < numCols; col++) {
-            const cell = grid[row][col];
-            const cellDiv = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-            
-            // Skip start and end nodes to avoid overwriting them
-            if (cell.isStart || cell.isEnd) continue;
-
-            // Randomly decide if this cell should be a wall
-            if (Math.random() < 0.3) { // Adjust probability (0.3 for ~30% walls)
-                cell.isWall = true;
-                cellDiv.classList.add('wall');
-            } else {
-                cell.isWall = false;
-                cellDiv.classList.remove('wall');
+                    if (!neighbor.visited) {
+                        neighbor.visited = true;
+                        GridModule.markAsHead(neighbor);
+                        spawnWorker(neighbor);
+                    }
+                }
             }
-        }
-    }
-    debugText.innerText = 'Random maze generated!';
+        });
+        
+        GridModule.markAsVisited(current);
+    }, 40);
 }
 
-
-// Initialize the grid
 createGrid();

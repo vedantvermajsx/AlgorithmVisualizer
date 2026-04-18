@@ -1,76 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bubble Sort Visualizer with Debug and Step Modes</title>
-    <link rel="stylesheet" href="./heap.css">
-    <link
-    href="https://fonts.googleapis.com/css?family=Oswald&display=swap"
-    rel="stylesheet"
-/>
-<link 
-    href="https://fonts.googleapis.com/css?family=Livvic&display=swap"
-    rel="stylesheet"
-/>
-<link 
-    href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" 
-    rel="stylesheet"
-/>
-<title>Heap Sort Visualization</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heap Sort — Visualizer</title>
+  <link rel="stylesheet" href="../CSS/exponential-shared.css">
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <div id="settings-menu">
-                <i class="fas fa-bars"></i>
-            </div>
-            
-            <div>
-                <h1>Heap <span>Sort</span> Visualization</h1>
-            </div>
-            
-            <div id="theme-switcher">
-                <i class="fas fa-adjust"></i>
-            </div>
-        </div>
-        <div class="gradient-border"></div>
-    </header>
+  <header>
+    <div class="header-container">
+      <a href="../index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px;">
+        <img src="../assests/logbase10-icon-dark.svg" alt="LogBase10" width="32px">
+        <h1>Heap <span>Sort</span></h1>
+      </a>
+    </div>
+  </header>
 
-    
-    <main> 
-   
-        <section style="display: grid;place-items: center;">
-        <div id="array-container">
-            <div class="timeandspace">
-            <span>Time Complexity : O(N)</span>
-            <span>Space Complexity : O(N)</span>
-        </div>
-        </div>
-    
-    <div class="controls">
-        <label for="Size">Size:</label>
-        <input type="number" id="Size" placeholder="Enter Size">
+  <div class="wrapper">
+    <div class="left">
+      <div id="array-container"></div>
+
+
+
+      <div class="controls">
+        <label for="Size">Size</label>
+        <input type="number" id="Size" placeholder="max 50">
         <button onclick="startAutomaticSort()">Automatic</button>
-        <button onclick="setManualMode()">Manual</button>
-        <button onclick="stepSort()" id="step-button" disabled>Step</button>
         <button onclick="resetArray()">Reset</button>
+      </div>
+
+      <div id="debug-panel">
+        <h2>Status</h2>
+        <p id="debug-text">Press Automatic to begin sorting…</p>
+      </div>
     </div>
-    
-    <div id="debug-panel">
-        <h2>Debug Info</h2>
-        <p id="debug-text">Press "Automatic" or "Manual" to begin sorting...</p>
+
+    <div class="right">
+      <div id="code-container">
+        <h2>Heap Sort</h2>
+        <pre id="algorithm-code"><span id="code-line-1">function heapSort(arr) {</span>
+<span id="code-line-2">  let n = arr.length;</span>
+<span id="code-line-3">  for (let i = n/2-1; i &gt;= 0; i--)</span>
+<span id="code-line-4">    heapify(arr, n, i);</span>
+<span id="code-line-5">  for (let i = n-1; i &gt; 0; i--) {</span>
+<span id="code-line-6">    swap(arr, 0, i);</span>
+<span id="code-line-7">    heapify(arr, i, 0);</span>
+<span id="code-line-8">  }</span>
+<span id="code-line-9">}</span>
+<span id="code-line-10">function heapify(arr, n, i) {</span>
+<span id="code-line-11">  let largest = i;</span>
+<span id="code-line-12">  let l = 2*i+1, r = 2*i+2;</span>
+<span id="code-line-13">  if (l &lt; n &amp;&amp; arr[l] &gt; arr[largest]) largest = l;</span>
+<span id="code-line-14">  if (r &lt; n &amp;&amp; arr[r] &gt; arr[largest]) largest = r;</span>
+<span id="code-line-15">  if (largest !== i) {</span>
+<span id="code-line-16">    swap(arr, i, largest);</span>
+<span id="code-line-17">    heapify(arr, n, largest);</span>
+<span id="code-line-18">  }</span>
+<span id="code-line-19">}</span></pre>
+      </div>
     </div>
-</section >
+  </div>
 
-<section class="description">
- 
-    
-</section>
+  <div class="description">
+    <div class="description-inner">
+      <h2>About Heap Sort</h2>
+      <p>Heap Sort uses a binary heap data structure. It first builds a max-heap from the array, then repeatedly extracts the maximum element and rebuilds the heap.</p>
+      <h3>Complexity</h3>
+      <div class="complexity-grid">
+        <div class="complexity-card"><div class="label">Time (all)</div><div class="value">O(n log n)</div></div>
+        <div class="complexity-card"><div class="label">Space</div><div class="value">O(1)</div></div>
+        <div class="complexity-card"><div class="label">Stable</div><div class="value">No</div></div>
+        <div class="complexity-card"><div class="label">In-place</div><div class="value">Yes</div></div>
+      </div>
+      <h3>Visualizing Algorithm</h3>
+      <img src="https://media.geeksforgeeks.org/wp-content/uploads/20240928160744/Visualize-the-array-as-a-complete-binary-tree.webp" alt="Heap Sort Visualization" class="description-image" style="display: block; margin: 20px auto; max-width: 600px; width: 100%;" />
+    </div>
+  </div>
 
-</main>
+  <footer>
+    <img src="../assests/logbase10-wordmark.svg" alt="LogBase10" width="120px">
+    <p>© 2024 LogBase10. All rights reserved.</p>
+  </footer>
 
-    
-    <script src="heap.js"></script>
+  <script src="heap.js"></script>
 </body>
 </html>

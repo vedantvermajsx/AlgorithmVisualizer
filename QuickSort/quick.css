@@ -1,13 +1,9 @@
 
-/* ----------------------------------------------------------------- */
-/* Global */
-/* ----------------------------------------------------------------- */
 
 body {
     background-color: rgb(25, 25, 25);
     position: relative; 
 }
-
 
 h1 {
     margin: 20px 0;
@@ -117,10 +113,6 @@ input[type="range"] {
     color: #007BFF;
 }
 
-/* ----------------------------------------------------------------- */
-/* Header */
-/* ----------------------------------------------------------------- */
-
 div.header-container {
     display: grid;
     grid-template-columns: 1fr 5fr 1fr;
@@ -145,8 +137,6 @@ div.gradient-border {
     background: linear-gradient(to right,  #0067ff, #8900e8);
 }
 
-/* Webkit browsers custom scrollbar */
-
 ::-webkit-scrollbar {
     height: 10px;
 }
@@ -161,17 +151,10 @@ div.gradient-border {
     background: #7e7eed;
 }
 
-/* Firefox */
-
 section.list {
     scrollbar-color: #7474fd rgb(202, 190, 255);
     scrollbar-width: thin;
 }
-
-
-/* ----------------------------------------------------------------- */
-/* Operations */
-/* ----------------------------------------------------------------- */
 
 div.controls input {
     padding: 5px;
@@ -194,10 +177,6 @@ div.controls input::placeholder {
     font-style: italic;
 }
 
-/* ----------------------------------------------------------------- */
-/* Buttons */
-/* ----------------------------------------------------------------- */
-
 button.button {
     border: none;
     background: linear-gradient(-125deg,  #0067ff, #8900e8);
@@ -215,7 +194,6 @@ button.button {
 button.button:hover {
     transform: scale(1.03);
 }
-
 
 .timeandspace{
     display: flex;

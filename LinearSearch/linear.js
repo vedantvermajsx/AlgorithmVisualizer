@@ -1,178 +1,156 @@
 let array = [];
-const TAndC=`<div class="timeandspace">
-            <span>Time Complexity : O(N)</span>
-            <span>Space Complexity : O(1)</span>
-        </div>`;
-let target = null;
-let current=0;
-let Size=0;
-
 const arrayContainer = document.getElementById("array-container");
 const debugText = document.getElementById("debug-text");
-const debugArrayText = document.getElementById("debug-array-text");
-const nextStepButton=document.getElementById("step-button");
-const manualSearchButton=document.getElementById("auto-button");
-const autoSearchButton=document.getElementById("manual-button");
-let isSearching = false;
-let isManualMode = false;
-
-const targetInput = document.getElementById("target-val");
 const SizeInput = document.getElementById("Size");
+const targetInput = document.getElementById("target-val");
+const stepButton = document.getElementById("step-button");
 
-function GetSize(){
-Size = parseInt(SizeInput.value);
-SizeInput.value='';
-if (Size >50 || target === "") {
-    updateDebugText("Please enter a valid target value.");
-    return;
+let Size = 0;
+let target = -1;
+let currentIndex = 0;
+let isSearching = false;
+let isManual = false;
+
+function highlightCodeLine(line) {
+    document.querySelectorAll("#algorithm-code span").forEach((codeLine) => codeLine.classList.remove("highlight"));
+    const lineElement = document.getElementById(`code-line-${line}`);
+    if (lineElement) lineElement.classList.add("highlight");
 }
-generateArray();
+
+function GetSize() {
+    Size = parseInt(SizeInput.value);
+    SizeInput.value = '';
+    if (!Size || Size > 50) {
+        updateDebugText("Please enter a valid size (max 50).");
+        return;
+    }
+    generateArray();
 }
 
 function generateArray() {
-    const minValue = 1;
-    const maxValue = 50;
-
-    array = Array.from({ length: Size }, () => Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue);
-
+    array = Array.from({ length: Size || 20 }, () => Math.floor(Math.random() * 100) + 10);
     renderArray();
-    resetIndices();
-    updateDebugText("Array generated and sorted. Press 'Start Binary Search' to begin.");
-    displayArrayInDebugPanel();
+    updateDebugText("New array generated. Ready for searching.");
 }
 
 function renderArray() {
-    arrayContainer.innerHTML = "";
-    const maxValue = Math.max(...array);
-
-    array.forEach((value) => {
-        const bar = document.createElement("div");
-        bar.classList.add("bar");
-        bar.style.height = `${(value / maxValue) * 100}%`;
-        arrayContainer.appendChild(bar);
-    });
-}
-
-function displayArrayInDebugPanel() {
-    const arrayString = array.join(", ");
-    debugArrayText.innerText = `Generated Array: [${arrayString}]`;
+    const adjustedMax = Math.max(...array);
+    const bars = arrayContainer.children;
+    if (bars.length !== array.length) {
+        arrayContainer.innerHTML = "";
+        array.forEach((value) => {
+            const bar = document.createElement("div");
+            bar.classList.add("bar");
+            bar.style.height = `${(value / adjustedMax) * 100}%`;
+            arrayContainer.appendChild(bar);
+        });
+    } else {
+        array.forEach((value, index) => {
+            bars[index].style.height = `${(value / adjustedMax) * 100}%`;
+        });
+    }
 }
 
 function updateDebugText(message) {
     debugText.innerText = message;
 }
 
-function resetIndices() {
-    current=0;
-}
-
 async function startAutoSearch() {
-    if (isSearching || isManualMode) return;
-
     target = parseInt(targetInput.value);
-    targetInput.value = "";
-    if (isNaN(target) || target === "") {
-        updateDebugText("Please enter a valid target value.");
+    if (isNaN(target)) {
+        alert("Please enter a target value.");
         return;
     }
-
     isSearching = true;
-    updateDebugText(`Searching for value: ${target}`);
+    isManual = false;
+    stepButton.disabled = true;
+    currentIndex = 0;
+    
+    highlightCodeLine(1);
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-    autoSearchButton.disabled = true;
-    manualSearchButton.disabled = true;
-    nextStepButton.disabled = true;
-
-    const bars = document.getElementsByClassName("bar");
-while(isSearching){
-    if(current>Size-1){
-        break;
-    }     
-     await new Promise((resolve) => setTimeout(resolve, 200));
-     
-     Array.from(bars)[current].style.backgroundColor="crimson";
-     
-      updateDebugText(`Target: ${target}, Current: ${array[current]}`);
-
-        if (array[current] === target) {
-            Array.from(bars).forEach(bar => bar.style.backgroundColor = "green");   
-         Array.from(bars)[current].style.backgroundColor="blue";
-            updateDebugText(`Target found at index ${current}!`);
-            break;
-        } 
-        current++;
-        await new Promise((resolve) => setTimeout(resolve, 100));
-}
+    while (currentIndex < array.length) {
+        if (!isSearching) return;
+        highlightCodeLine(2);
         
-        if(array[current]!=target){
-        updateDebugText("Target not found in the array.");
+        const bars = document.getElementsByClassName("bar");
+        bars[currentIndex].classList.add("active");
+        updateDebugText(`Checking element at index ${currentIndex} (value: ${array[currentIndex]})`);
+        
+        highlightCodeLine(3);
+        await new Promise(resolve => setTimeout(resolve, 400));
+
+        if (array[currentIndex] === target) {
+            highlightCodeLine(4);
+            bars[currentIndex].classList.add("sorted");
+            updateDebugText(`Found ${target} at index ${currentIndex}!`);
+            isSearching = false;
+            return;
         }
+        
+        bars[currentIndex].classList.remove("active");
+        bars[currentIndex].classList.add("comparing");
+        currentIndex++;
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    highlightCodeLine(7);
+    updateDebugText(`${target} not found in the array.`);
     isSearching = false;
-    autoSearchButton.disabled = false;
-    manualSearchButton.disabled = false;
 }
 
-
-async function startManualSearch() {
-    if (isSearching || isManualMode) return;
-
+function startManualSearch() {
     target = parseInt(targetInput.value);
-    targetInput.value = "";
-    if (isNaN(target) || target === "") {
-        updateDebugText("Please enter a valid target value.");
+    if (isNaN(target)) {
+        alert("Please enter a target value.");
         return;
     }
-
-    isManualMode = true;
     isSearching = true;
-    updateDebugText(`Searching for value: ${target}`);
-
-    autoSearchButton.disabled = true;
-    manualSearchButton.disabled = true;
-    nextStepButton.disabled = false;
+    isManual = true;
+    stepButton.disabled = false;
+    currentIndex = 0;
+    updateDebugText("Manual search started. Click 'Step' to proceed.");
+    highlightCodeLine(1);
 }
-
 
 function nextStep() {
-    if (!isSearching || !isManualMode) return;
+    if (!isSearching) return;
+    highlightCodeLine(2);
+    
     const bars = document.getElementsByClassName("bar");
-
-    if(current!=Size){
-    Array.from(bars)[current].style.backgroundColor = "crimson";
-    }
-    updateDebugText(`Target: ${target}, Current: ${array[current]}`);
-    if (array[current] === target || current>=Size) {
-    console.log(current);
-      
-        if(current!=Size){
-     Array.from(bars).forEach(bar => bar.style.backgroundColor = "green");   
-     Array.from(bars)[current].style.backgroundColor="blue";
-        updateDebugText(`Target found at index ${current}!`);
-        isSearching = false;
-        autoSearchButton.disabled = true;
-        manualSearchButton.disabled = true;
-    }
-    else{
-        updateDebugText(`Target Not Found! ${target}!`);
+    if (currentIndex < array.length) {
+        bars[currentIndex].classList.add("active");
+        updateDebugText(`Checking element at index ${currentIndex} (value: ${array[currentIndex]})`);
         
+        highlightCodeLine(3);
+        if (array[currentIndex] === target) {
+            highlightCodeLine(4);
+            bars[currentIndex].classList.add("sorted");
+            updateDebugText(`Found ${target} at index ${currentIndex}!`);
+            isSearching = false;
+            stepButton.disabled = true;
+            return;
+        }
+        
+        setTimeout(() => {
+            if(bars[currentIndex]) {
+                bars[currentIndex].classList.remove("active");
+                bars[currentIndex].classList.add("comparing");
+            }
+            currentIndex++;
+        }, 300);
+    } else {
+        highlightCodeLine(7);
+        updateDebugText("Target not found.");
         isSearching = false;
-        autoSearchButton.disabled = false;
-        manualSearchButton.disabled = false;
-    } 
+        stepButton.disabled = true;
+    }
 }
-
-    current++;
-
-}
-
 
 function resetArray() {
     isSearching = false;
-    isManualMode = false;
+    highlightCodeLine(0);
     generateArray();
-    nextStepButton.disabled = true;
-    autoSearchButton.disabled = false;
-    manualSearchButton.disabled = false;
 }
 
-SizeInput.addEventListener("change", GetSize);
+SizeInput.addEventListener('change', GetSize);
+generateArray();

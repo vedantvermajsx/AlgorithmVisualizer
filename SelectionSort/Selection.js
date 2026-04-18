@@ -2,26 +2,52 @@ let array = [];
 const arrayContainer = document.getElementById("array-container");
 const debugText = document.getElementById("debug-text");
 const stepButton = document.getElementById("step-button");
-
+let Size = 0;
 let isSorting = false;
 let isManual = false;
-let i = 0, j = 0, minIndex = 0;
+let i = 0, j = 0;
+const SizeInput = document.getElementById("Size");
+
+function highlightCodeLine(line) {
+    document.querySelectorAll("#algorithm-code span").forEach((codeLine) => codeLine.classList.remove("highlight"));
+    const lineElement = document.getElementById(`code-line-${line}`);
+    if (lineElement) lineElement.classList.add("highlight");
+}
+
+function GetSize() {
+    Size = parseInt(SizeInput.value);
+    SizeInput.value = '';
+    if (!Size || Size > 50) {
+        updateDebugText("Please enter a valid size (max 50).");
+        return;
+    }
+    generateArray();
+}
 
 function generateArray() {
-    array = Array.from({ length: 20 }, () => Math.floor(Math.random() * 200) + 10);
+    array = Array.from({ length: Size || 20 }, () => Math.floor(Math.random() * 90) + 10);
     renderArray();
     resetIndices();
-    updateDebugText("New array generated. Choose 'Automatic' or 'Manual' to start sorting.");
+    updateDebugText("New array generated. Ready for sorting.");
 }
 
 function renderArray() {
-    arrayContainer.innerHTML = "";
-    array.forEach((value) => {
-        const bar = document.createElement("div");
-        bar.classList.add("bar");
-        bar.style.height = `${value}px`;
-        arrayContainer.appendChild(bar);
-    });
+    const adjustedMax = Math.max(...array);
+    const bars = arrayContainer.children;
+
+    if (bars.length !== array.length) {
+        arrayContainer.innerHTML = "";
+        array.forEach((value) => {
+            const bar = document.createElement("div");
+            bar.classList.add("bar");
+            bar.style.height = `${(value / adjustedMax) * 100}%`;
+            arrayContainer.appendChild(bar);
+        });
+    } else {
+        array.forEach((value, index) => {
+            bars[index].style.height = `${(value / adjustedMax) * 100}%`;
+        });
+    }
 }
 
 function updateDebugText(message) {
@@ -31,178 +57,161 @@ function updateDebugText(message) {
 function resetIndices() {
     i = 0;
     j = 0;
-    minIndex = 0;
 }
 
-async function manualSortStep() {
-    if (isSorting) return; // Prevents running if automatic sorting is active
-
-    // Disable the "Next Step" button to prevent rapid clicking
-    stepButton.disabled = true;
-
-    const bars = document.getElementsByClassName("bar");
-
-    // Reset all bars to default state (green) at the beginning of each step
-    Array.from(bars).forEach(bar => bar.style.backgroundColor = "#4CAF50");
-
-    if (i >= array.length - 1) {
-        // If sorting is complete, change the bars to green after sorting is done
-        updateDebugText("Array is fully sorted!");
-        isSorting = false;
-        stepButton.disabled = true; // Disable the Step button after sorting is complete
-
-        // Final pass to change all bars to green to indicate sorted array
-        Array.from(bars).forEach(bar => bar.style.backgroundColor = "green");
-
-        // Re-enable the step button after the last step
-        stepButton.disabled = false;
-        return;
-    }
-
-    // Highlight the current element at index 'i' and the candidate element at index 'j' as blue
-    bars[i].style.backgroundColor = "blue"; // Highlight the element at index 'i'
-    bars[minIndex].style.backgroundColor = "blue"; // Highlight the element at minIndex in blue
-
-    // Highlight the candidate element at index 'j' with crimson for comparison
-    bars[j].style.backgroundColor = "crimson"; // Highlight the element at index 'j' (candidate for min)
-
-    // If we find a smaller value, update the minIndex
-    if (array[j] < array[minIndex]) {
-        // Reset the previous minIndex (if it was not i) and update minIndex to j
-        if (minIndex !== i) {
-            bars[minIndex].style.backgroundColor = "#4CAF50"; // Reset the previous minIndex element to green
-        }
-        minIndex = j; // Update the minIndex to the new smallest element
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 300)); // Delay for smoothness
-
-    j++; // Increment j to move to the next candidate for comparison
-
-    // Once the inner loop finishes (when j >= array.length), we perform the swap
-    if (j >= array.length) {
-        // Only perform the swap once the entire inner loop is done
-        if (minIndex !== i) {
-            // Highlight the swap (swap elements at i and minIndex)
-            bars[minIndex].style.backgroundColor = "blue"; // Element to swap
-            bars[i].style.backgroundColor = "blue"; // Element at index i to swap with
-
-            await new Promise(resolve => setTimeout(resolve, 300)); // Delay before swapping
-
-            // Swap the elements in the array and update their heights
-            [array[i], array[minIndex]] = [array[minIndex], array[i]];
-            bars[i].style.height = `${array[i]}px`;
-            bars[minIndex].style.height = `${array[minIndex]}px`;
-
-            updateDebugText(`Swapped elements at index ${i} and ${minIndex}`);
-        }
-
-        // After completing the pass, move to the next index
-        minIndex = i + 1;
-        i++;
-        j = i + 1; // Start the inner loop from the next index
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 300)); // Delay to allow visualization
-
-    // After completing the inner loop, reset the candidate element `j` back to green, but leave `i` and `minIndex` blue
-    if (j < array.length) {
-        bars[j].style.backgroundColor = "#4CAF50"; // Reset the candidate element to green
-    }
-
-    // Re-enable the step button after the step is completed
-    stepButton.disabled = false;
-}
-
-
-
-
-async function automaticSort() {
-    // Reset the bars' colors before starting automatic sorting
-    resetBars(); 
-
-    isSorting = true;
-    const bars = document.getElementsByClassName("bar");
-
-    for (let i = 0; i < array.length - 1; i++) {
-        let minIndex = i;
-        for (let j = i + 1; j < array.length; j++) {
-            if (!isSorting) return; // Stop if sorting is disabled
-
-            // Highlight the current elements being compared (red)
-            bars[minIndex].style.backgroundColor = "blue";
-            bars[j].style.backgroundColor = "crimson";
-
-            // Wait for a smooth transition
-            await new Promise(resolve => setTimeout(resolve, 300));
-
-            if (array[j] < array[minIndex]) {
-                // Reset the previous minimum element to green
-                if (minIndex !== i) {
-                    bars[minIndex].style.backgroundColor = "#4CAF50";
-                }
-
-                // Update minIndex to the new smallest element
-                minIndex = j;
-            }
-
-            // Wait for smooth transition after comparison
-            await new Promise(resolve => setTimeout(resolve, 300));
-
-            // Reset the compared elements back to green
-            bars[minIndex].style.backgroundColor = "#4CAF50";
-            bars[j].style.backgroundColor = "#4CAF50";
-        }
-
-        // Swap the elements if necessary
-        if (minIndex !== i) {
-            // Highlight the two elements that will be swapped (blue)
-            bars[minIndex].style.backgroundColor = "blue";
-            bars[i].style.backgroundColor = "blue";
-
-            // Wait for the smooth transition before swapping
-            await new Promise(resolve => setTimeout(resolve, 300));
-
-            // Perform the swap
-            [array[i], array[minIndex]] = [array[minIndex], array[i]];
-            bars[i].style.height = `${array[i]}px`;
-            bars[minIndex].style.height = `${array[minIndex]}px`;
-
-            updateDebugText(`Swapped elements at index ${i} and ${minIndex}`);
-        }
-
-        // Reset the swapped elements back to green
-        bars[i].style.backgroundColor = "#4CAF50";
-        bars[minIndex].style.backgroundColor = "#4CAF50";
-    }
-
-    // Once sorting is complete, update all bars to green to indicate sorting is done
-    updateDebugText("Array is fully sorted!");
-    Array.from(bars).forEach(bar => bar.style.backgroundColor = "green");
-
-    isSorting = false;
-}
-
-// Reset bars to green when switching sorting methods (manual -> automatic)
-function resetBars() {
+function clearBarStates() {
     const bars = document.getElementsByClassName("bar");
     Array.from(bars).forEach(bar => {
-        bar.style.backgroundColor = "#4CAF50"; // Reset all bars to green
+        if (!bar.classList.contains("sorted")) {
+            bar.classList.remove("active", "comparing");
+        }
     });
 }
 
+async function manualSortStep() {
+    const bars = document.getElementsByClassName("bar");
+    if (i >= array.length - 1) {
+        updateDebugText("Array is fully sorted! 🎉");
+        highlightCodeLine(0);
+        Array.from(bars).forEach(bar => bar.classList.add("sorted"));
+        isSorting = false;
+        stepButton.disabled = true;
+        return;
+    }
+
+    clearBarStates();
+
+    highlightCodeLine(1);
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    let min_idx = i;
+    highlightCodeLine(2);
+    const currentBars = document.getElementsByClassName("bar");
+    currentBars[i].classList.add("active");
+    updateDebugText(`Looking for min starting at index ${i}...`);
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    highlightCodeLine(3);
+    for (let current_j = i + 1; current_j < array.length; current_j++) {
+        highlightCodeLine(4);
+        const innerBars = document.getElementsByClassName("bar");
+        innerBars[current_j].classList.add("comparing");
+        await new Promise(resolve => setTimeout(resolve, 350));
+
+        if (array[current_j] < array[min_idx]) {
+            highlightCodeLine(5);
+            innerBars[min_idx].classList.remove("active");
+            min_idx = current_j;
+            innerBars[min_idx].classList.add("active");
+            updateDebugText(`New minimum found at index ${min_idx} (value: ${array[min_idx]})`);
+            await new Promise(resolve => setTimeout(resolve, 350));
+        }
+        innerBars[current_j].classList.remove("comparing");
+    }
+
+    highlightCodeLine(8);
+    await new Promise(resolve => setTimeout(resolve, 300));
+    highlightCodeLine(9);
+    await new Promise(resolve => setTimeout(resolve, 300));
+    highlightCodeLine(10);
+    [array[i], array[min_idx]] = [array[min_idx], array[i]];
+    renderArray();
+    const swapBars = document.getElementsByClassName("bar");
+    if (swapBars[i]) swapBars[i].classList.add("comparing");
+    if (swapBars[min_idx]) swapBars[min_idx].classList.add("comparing");
+    updateDebugText(`✓ Swapped indices ${i} and ${min_idx}`);
+    await new Promise(resolve => setTimeout(resolve, 600));
+    if (swapBars[i]) swapBars[i].classList.remove("comparing");
+    if (swapBars[min_idx]) swapBars[min_idx].classList.remove("comparing");
+
+    i++;
+    const finalBars = document.getElementsByClassName("bar");
+    for (let k = 0; k < i; k++) {
+        if (finalBars[k]) finalBars[k].classList.add("sorted");
+    }
+}
+
+async function automaticSort() {
+    isSorting = true;
+    for (let i = 0; i < array.length - 1; i++) {
+        if (!isSorting || isManual) return;
+
+        highlightCodeLine(1);
+        await new Promise(resolve => setTimeout(resolve, 200));
+        let min_idx = i;
+
+        highlightCodeLine(2);
+        const startBars = document.getElementsByClassName("bar");
+        startBars[i].classList.add("active");
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        for (let current_j = i + 1; current_j < array.length; current_j++) {
+            if (!isSorting || isManual) return;
+
+            highlightCodeLine(3);
+            highlightCodeLine(4);
+            const innerBars = document.getElementsByClassName("bar");
+            innerBars[current_j].classList.add("comparing");
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            if (array[current_j] < array[min_idx]) {
+                highlightCodeLine(5);
+                innerBars[min_idx].classList.remove("active");
+                min_idx = current_j;
+                innerBars[min_idx].classList.add("active");
+                updateDebugText(`New min at ${min_idx}: ${array[min_idx]}`);
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+            innerBars[current_j].classList.remove("comparing");
+        }
+
+        highlightCodeLine(8);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        highlightCodeLine(9);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        highlightCodeLine(10);
+        [array[i], array[min_idx]] = [array[min_idx], array[i]];
+        renderArray();
+        const swapBars = document.getElementsByClassName("bar");
+        if (swapBars[i]) swapBars[i].classList.add("comparing");
+        if (swapBars[min_idx]) swapBars[min_idx].classList.add("comparing");
+        updateDebugText(`✓ Swapped min to position ${i}`);
+        await new Promise(resolve => setTimeout(resolve, 600));
+        if (swapBars[i]) swapBars[i].classList.remove("comparing");
+        if (swapBars[min_idx]) swapBars[min_idx].classList.remove("comparing");
+
+        const afterBars = document.getElementsByClassName("bar");
+        for (let k = 0; k <= i; k++) {
+            if (afterBars[k]) afterBars[k].classList.add("sorted");
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
+
+    const finalBars = document.getElementsByClassName("bar");
+    Array.from(finalBars).forEach(bar => bar.classList.add("sorted"));
+    highlightCodeLine(0);
+    updateDebugText("✅ Array fully sorted!");
+    isSorting = false;
+}
 
 function setManualMode() {
     isManual = true;
-    isSorting = false; // Stop automatic sorting
+    isSorting = false;
     stepButton.disabled = false;
     resetIndices();
-    updateDebugText("Manual mode activated. Use 'Step' to go forward.");
+    renderArray();
+    updateDebugText("Manual mode activated. Use 'Step' to proceed.");
 }
 
-function stepSort() {
+async function stepSort() {
     if (isManual) {
-        manualSortStep();
+        stepButton.disabled = true;
+        await manualSortStep();
+        const bars = document.getElementsByClassName("bar");
+        const allSorted = Array.from(bars).every(b => b.classList.contains("sorted"));
+        if (!allSorted) stepButton.disabled = false;
     }
 }
 
@@ -210,7 +219,7 @@ function startAutomaticSort() {
     if (!isSorting) {
         isManual = false;
         stepButton.disabled = true;
-        isSorting = true;
+        resetIndices();
         automaticSort();
     }
 }
@@ -218,8 +227,10 @@ function startAutomaticSort() {
 function resetArray() {
     isSorting = false;
     isManual = false;
+    stepButton.disabled = true;
+    highlightCodeLine(0);
     generateArray();
 }
 
-// Initial array generation
+SizeInput.addEventListener('change', GetSize);
 generateArray();

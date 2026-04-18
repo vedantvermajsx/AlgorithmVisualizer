@@ -3,100 +3,58 @@ let swappedMade = 0;
 const arrayContainer = document.getElementById("array-container");
 const debugText = document.getElementById("debug-text");
 const stepButton = document.getElementById("step-button");
-const OkButton = document.getElementById("ok-button");
-const InputArray = document.getElementById("Array-input");
 
 let Size = 0;
 let isSorting = false;
 let isManual = false;
 let i = 0, j = 0;
 
-let MAX = 1000;  // Maximum value constraint
-let MIN = 10;  // Minimum value to add to each element to ensure visibility
+let MAX = 100;
+let MIN = 10;
 const SizeInput = document.getElementById("Size");
+
+function highlightCodeLine(line) {
+    document.querySelectorAll("#algorithm-code span").forEach((codeLine) => codeLine.classList.remove("highlight"));
+    const lineElement = document.getElementById(`code-line-${line}`);
+    if (lineElement) lineElement.classList.add("highlight");
+}
 
 function GetSize() {
     Size = parseInt(SizeInput.value);
     SizeInput.value = '';
-    if (Size > 50 || Size === "") {
+    if (!Size || Size > 50) {
+        updateDebugText("Please enter a valid size value (max 50).");
         return;
-        updateDebugText("Please enter a valid size value.");
     }
     generateArray();
 }
 
-function processInputArray() {
-    // Get input from the user and split into an array of integers
-    array = InputArray.value.trim().split(" ").map(item => {
-        let num = parseInt(item.trim());
-        return num;
-    });
-
-    // Check if any value is greater than 1000
-    if (array.some(num => num > 1000)) {
-        // Turn the terminal text red and show error message
-        InputArray.style.borderColor = "red"; // Change input field border color to red
-        updateDebugText("Error: Input contains values greater than 1000. Please correct the input.");
-        return;
-    }
-
-    // Restore the default state of the input field
-    InputArray.style.borderColor = ""; // Reset the input field border color
-    OkButton.disabled = false; // Enable the OK button
-
-    // Ensure array elements are not greater than MAX (1000)
-    array = array.filter(value => value <= MAX);  // Filter out any invalid values
-
-    if (array.length === 0) {
-        updateDebugText("Please enter a valid array of numbers.");
-        return;
-    }
-
-    getMax(); // Recalculate MAX after custom input
-    renderArray("");
-    updateDebugText("Array generated. Choose 'Automatic' or 'Manual' to start sorting.");
-}
-
 function generateArray() {
-    array = Array.from({ length: Size }, () => Math.floor(Math.random() * (MAX - 10)) + 10);
-    getMax(); // Recalculate MAX after generating random array
-    renderArray("");
+    array = Array.from({ length: Size || 20 }, () => Math.floor(Math.random() * (MAX - MIN)) + MIN);
+    renderArray();
     resetIndices();
-    updateDebugText("New array generated. Choose 'Automatic' or 'Manual' to start sorting.");
+    updateDebugText("New array generated. Ready for sorting.");
 }
 
-// Function to calculate the maximum value in the array
-function getMax() {
-    let max = 0;
-    array.forEach(value => {
-        max = Math.max(value, max);
-    });
-    MAX = Math.max(MAX, max);
-    renderArray(""); // Render the array after updating the max value
-}
+function renderArray() {
+    const adjustedMax = Math.max(...array);
+    const bars = arrayContainer.children;
 
-function renderArray(text) {
-    arrayContainer.innerHTML = text;
+    if (bars.length !== array.length) {
 
-    // Add MIN value to each element to ensure visibility of smaller elements
-    const adjustedArray = array.map(value => value + MIN);
+        arrayContainer.innerHTML = "";
+        array.forEach((value) => {
+            const bar = document.createElement("div");
+            bar.classList.add("bar");
+            bar.style.height = `${(value / adjustedMax) * 100}%`;
+            arrayContainer.appendChild(bar);
+        });
+    } else {
 
-    // Calculate the max value in the adjusted array
-    const adjustedMax = Math.max(...adjustedArray);
-
-    array.forEach((value, index) => {
-        const span = document.createElement("span");
-        const bar = document.createElement("div");
-        span.classList.add("myspan");
-        bar.classList.add("bar");
-        span.innerHTML = value;
-
-        // Set the height of the bar as a percentage of the adjusted maximum value
-        bar.style.height = `${(adjustedArray[index] / adjustedMax) * 100}%`;  // Ensure bars are proportional
-
-        bar.appendChild(span);
-        arrayContainer.appendChild(bar);
-    });
+        array.forEach((value, index) => {
+            bars[index].style.height = `${(value / adjustedMax) * 100}%`;
+        });
+    }
 }
 
 function updateDebugText(message) {
@@ -109,122 +67,119 @@ function resetIndices() {
     j = 0;
 }
 
+function clearBarStates() {
+    const bars = document.getElementsByClassName("bar");
+    Array.from(bars).forEach(bar => {
+        if (!bar.classList.contains("sorted")) {
+            bar.classList.remove("active", "comparing");
+        }
+    });
+}
+
 async function manualSortStep() {
     const bars = document.getElementsByClassName("bar");
-    const spans = document.getElementsByClassName("myspan");
-
-    Array.from(bars).forEach(bar => bar.style.backgroundColor = "#1b8a1f");
-
-    if (isSorting) return;
-
-    if (j > 0) {
-        bars[j - 1].style.backgroundColor = "#1b8a1f";
-        bars[j].style.backgroundColor = "#1b8a1f";
-    }
-
     if (i >= array.length - 1) {
-        updateDebugText("Array is fully sorted!");
-        isSorting = false;
+        updateDebugText("Array is fully sorted! 🎉");
+        highlightCodeLine(0);
+        Array.from(bars).forEach(bar => bar.classList.add("sorted"));
         stepButton.disabled = true;
-        Array.from(bars).forEach(bar => bar.style.backgroundColor = "green");
         return;
     }
 
-    bars[j].style.backgroundColor = "#8a0a0a";
-    bars[j + 1].style.backgroundColor = "#8a0a0a";
+    clearBarStates();
+
+    highlightCodeLine(1);
+    await new Promise(resolve => setTimeout(resolve, 200));
+    highlightCodeLine(2);
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    bars[j].classList.add("active");
+    bars[j + 1].classList.add("active");
+
+    highlightCodeLine(3);
+    await new Promise(resolve => setTimeout(resolve, 400));
 
     if (array[j] > array[j + 1]) {
+        highlightCodeLine(4);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        highlightCodeLine(5);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        highlightCodeLine(6);
         swappedMade++;
-        bars[j].style.backgroundColor = "blue";
-        bars[j + 1].style.backgroundColor = "blue";
-
-        let temp = spans[j].innerHTML;
-        spans[j].innerHTML = spans[j + 1].innerHTML;
-        spans[j + 1].innerHTML = temp;
-
-        await new Promise((resolve) => setTimeout(resolve, 300));
-
         [array[j], array[j + 1]] = [array[j + 1], array[j]];
-        bars[j].style.height = `${(array[j] + MIN) / MAX * 100}%`; // Adjusted with MIN
-        bars[j + 1].style.height = `${(array[j + 1] + MIN) / MAX * 100}%`; // Adjusted with MIN
-
-        updateDebugText(`Swapped elements at index ${j} and ${j + 1}`);
+        renderArray();
+        const newBars = document.getElementsByClassName("bar");
+        newBars[j].classList.add("comparing");
+        newBars[j + 1].classList.add("comparing");
+        updateDebugText(`✓ Swapped elements at index ${j} and ${j + 1}`);
+        await new Promise(resolve => setTimeout(resolve, 600));
+        newBars[j].classList.remove("comparing");
+        newBars[j + 1].classList.remove("comparing");
     } else {
-        updateDebugText(`No swap needed for index ${j} and ${j + 1}`);
+        updateDebugText(`→ No swap needed at index ${j} and ${j + 1}`);
+        await new Promise(resolve => setTimeout(resolve, 300));
     }
+
     j++;
     if (j >= array.length - i - 1) {
+        const finalBars = document.getElementsByClassName("bar");
+        finalBars[array.length - i - 1].classList.add("sorted");
         j = 0;
         i++;
     }
-    IsSortedChecker();
-    stepButton.disabled = false;
 }
 
 async function automaticSort() {
-    isSorting = true;
     const bars = document.getElementsByClassName("bar");
-    const spans = document.getElementsByClassName("myspan");
     for (let i = 0; i < array.length - 1; i++) {
+        highlightCodeLine(1);
+        await new Promise(resolve => setTimeout(resolve, 200));
+
         for (let j = 0; j < array.length - i - 1; j++) {
             if (!isSorting || isManual) return;
 
-            bars[j].style.backgroundColor = "#8a0a0a";
-            bars[j + 1].style.backgroundColor = "#8a0a0a";
+            clearBarStates();
+            highlightCodeLine(2);
+            await new Promise(resolve => setTimeout(resolve, 200));
 
-            await new Promise((resolve) => setTimeout(resolve, 200));
+            const currentBars = document.getElementsByClassName("bar");
+            currentBars[j].classList.add("active");
+            currentBars[j + 1].classList.add("active");
+
+            highlightCodeLine(3);
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             if (array[j] > array[j + 1]) {
+                highlightCodeLine(4);
+                await new Promise(resolve => setTimeout(resolve, 300));
+                highlightCodeLine(5);
+                await new Promise(resolve => setTimeout(resolve, 300));
+                highlightCodeLine(6);
                 swappedMade++;
-
-                bars[j].style.backgroundColor = "blue";
-                bars[j + 1].style.backgroundColor = "blue";
-                await new Promise((resolve) => setTimeout(resolve, 200));
-                let temp = spans[j].innerHTML;
-                spans[j].innerHTML = spans[j + 1].innerHTML;
-                spans[j + 1].innerHTML = temp;
                 [array[j], array[j + 1]] = [array[j + 1], array[j]];
-                bars[j].style.height = `${(array[j] + MIN) / MAX * 100}%`; // Adjusted with MIN
-                bars[j + 1].style.height = `${(array[j + 1] + MIN) / MAX * 100}%`; // Adjusted with MIN
-
-                updateDebugText(`Swapped elements at index ${j} and ${j + 1}`);
+                renderArray();
+                const swapBars = document.getElementsByClassName("bar");
+                swapBars[j].classList.add("comparing");
+                swapBars[j + 1].classList.add("comparing");
+                updateDebugText(`✓ Swapped index ${j} and ${j + 1}`);
+                await new Promise(resolve => setTimeout(resolve, 600));
+                swapBars[j].classList.remove("comparing");
+                swapBars[j + 1].classList.remove("comparing");
             } else {
-                updateDebugText(`No swap needed for index ${j} and ${j + 1}`);
+                updateDebugText(`→ Comparing index ${j} and ${j + 1} — no swap`);
+                await new Promise(resolve => setTimeout(resolve, 400));
             }
-
-            await new Promise((resolve) => setTimeout(resolve, 300));
-
-            bars[j].style.backgroundColor = "#1b8a1f";
-            bars[j + 1].style.backgroundColor = "#1b8a1f";
         }
-        if (IsSortedChecker()) {
-            break;
-        }
-    }
-}
 
-function IsSortedChecker() {
-    for (let k = 1; k < array.length; k++) {
-        if (array[k] < array[k - 1]) {
-            return;
-        }
+        const sortedBars = document.getElementsByClassName("bar");
+        sortedBars[array.length - i - 1].classList.add("sorted");
     }
 
-    if (swappedMade < array.length) {
-        let TAndC = `<div class="timeandspace">
-        <span>Time Complexity : O(N)</span>
-        <span>Space Complexity : O(1)</span>
-    </div>`;
-        renderArray(TAndC);
-    } else {
-        let TAndC = `<div class="timeandspace">
-        <span>Time Complexity : O(N²)</span>
-        <span>Space Complexity : O(1)</span>
-    </div>`;
-        renderArray(TAndC);
-    }
+    const allBars = document.getElementsByClassName("bar");
+    Array.from(allBars).forEach(bar => bar.classList.add("sorted"));
+    highlightCodeLine(0);
+    updateDebugText("✅ Array fully sorted!");
     isSorting = false;
-    updateDebugText("Array is fully sorted!");
 }
 
 function setManualMode() {
@@ -232,13 +187,18 @@ function setManualMode() {
     isSorting = false;
     stepButton.disabled = false;
     resetIndices();
-    updateDebugText("Manual mode activated. Use 'Step' to go forward.");
+    renderArray();
+    updateDebugText("Manual mode activated. Use 'Step' to proceed.");
 }
 
 async function stepSort() {
     if (isManual) {
         stepButton.disabled = true;
-        await new Promise((resolve) => setTimeout(manualSortStep(), 300));
+        await manualSortStep();
+
+        const bars = document.getElementsByClassName("bar");
+        const allSorted = Array.from(bars).every(b => b.classList.contains("sorted"));
+        if (!allSorted) stepButton.disabled = false;
     }
 }
 
@@ -247,6 +207,7 @@ function startAutomaticSort() {
         isManual = false;
         stepButton.disabled = true;
         isSorting = true;
+        resetIndices();
         automaticSort();
     }
 }
@@ -254,8 +215,10 @@ function startAutomaticSort() {
 function resetArray() {
     isSorting = false;
     isManual = false;
+    stepButton.disabled = true;
+    highlightCodeLine(0);
     generateArray();
 }
 
 SizeInput.addEventListener('change', GetSize);
-OkButton.addEventListener("click", processInputArray);
+generateArray();
