@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFS Algorithm - Manual & Automatic Mode</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/Algorithm.css">
+
+</head>
+
+<body>
+    <header>
+        <a href="../index.html"
+            style="text-decoration: none; display: flex; align-items: center; gap: 15px; padding: 10px 20px;">
+            <img src="../assests/logbase10-icon-dark.svg" alt="LogBase10 Icon" width="40px">
+            <h1 style="margin: 0; color: white;">DFS <span>Visualization</span></h1>
+        </a>
+    </header>
+
+    <div id="grid-container"></div>
+
+    <div class="controls">
+        <button style="color: white;" onclick="startAutomatic()" id="start-automatic" class="btn">Start</button>
+        <button style="color: white;" onclick="resetGrid()" class="btn">Reset</button>
+        <button style="color: white;" onclick="generateMaze()" class="btn">Generate Maze</button>
+    </div>
+
+    <div id="debug-panel">
+        <h2>Debug Info</h2>
+        <p id="debug-text">Click "Start Manual" to begin.</p>
+    </div>
+
+    <section>
+        <h2>About DFS Algorithm</h2>
+        <p>The DFS (Depth-First Search) algorithm is a graph traversal algorithm used to explore all the nodes and edges
+            of a graph. It starts at a selected node and explores as far as possible along each branch before
+            backtracking.</p>
+
+        <h3>How DFS Works</h3>
+        <p>DFS uses a stack to explore the graph. Starting from a node, it moves to an adjacent node, marking it as
+            visited. It continues this process until it reaches a node with no unvisited neighbors, then it backtracks
+            and continues to the next unexplored node.</p>
+
+        <h3>Time and Space Complexity</h3>
+        <ul>
+            <li><strong>Time Complexity:</strong> O(V + E), where V is the number of vertices and E is the number of
+                edges in the graph.</li>
+            <li><strong>Space Complexity:</strong> O(V), due to the storage of visited nodes and the stack.</li>
+        </ul>
+
+        <h3>Visualizing DFS Algorithm</h3>
+        <p>The visualization below shows how the DFS algorithm explores the graph...</p>
+        <img src="https://media.geeksforgeeks.org/wp-content/uploads/20251014173018632936/frame_3148.webp" alt="DFS Visualization" class="description-image" style="display: block; margin: 20px auto; max-width: 600px; width: 100%;" />
+
+        <h3>Advantages of DFS Algorithm</h3>
+        <ul>
+            <li>Simple and easy to implement.</li>
+            <li>Can be used for maze-solving and tree traversal.</li>
+        </ul>
+
+        <h3>Limitations of DFS Algorithm</h3>
+        <ul>
+            <li>May get stuck in infinite loops in cyclic graphs if not implemented with cycle detection.</li>
+            <li>Not guaranteed to find the shortest path in an unweighted graph.</li>
+        </ul>
+    </section>
+
+
+    <section class="footer container-fluid bg-dark row  footer_border_box p-5"
+        style="margin-top:100px; width:100vw; min-height:20vh; display:flex; flex-wrap:wrap; justify-content:space-between;">
+
+        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 d-flex  align-items-center gap-5">
+            <h2 class="local_footer_tag_text">Follow us</h2>
+            <a class="mb-2"><i class="bi bi-github local_footer_logos"></i></a>
+            <a class="mb-2"><i class="bi bi-linkedin local_footer_logos"></i></a>
+            <a class="mb-2"><i class="bi bi-discord local_footer_logos"></i></a>
+            <a class="mb-2"><i class="bi bi-instagram local_footer_logos"></i></a>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 d-flex flex-column align-items-center mt-4">
+            <img src="../assests/logbase10-icon-dark.svg" alt="LogBase10 Icon" width="60px" class="mb-2">
+            <img src="../assests/logbase10-wordmark.svg" alt="LogBase10 Logo" width="180px">
+            <h6 class="mt-3" style="text-align: center; color: rgba(255, 255, 255, 0.5);">© 2024 LogBase10. All rights
+                reserved. </h6>
+        </div>
+    </section>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script type="module" src="dfs.js"></script>
+
+</body>
+
+</html>

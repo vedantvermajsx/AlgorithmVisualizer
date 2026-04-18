@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merge Sort — Visualizer</title>
+  <link rel="stylesheet" href="../css/exponential-shared.css">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <a href="../index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px;">
+        <img src="../assests/logbase10-icon-dark.svg" alt="LogBase10" width="32px">
+        <h1>Merge <span>Sort</span></h1>
+      </a>
+    </div>
+  </header>
+
+  <div class="wrapper">
+    <div class="left">
+      <div id="array-container"></div>
+
+
+
+      <div class="controls">
+        <label for="Size">Size</label>
+        <input type="number" id="Size" placeholder="max 50">
+        <button onclick="startAutomaticSort()">Automatic</button>
+        <button onclick="resetArray()">Reset</button>
+      </div>
+
+      <div id="debug-panel">
+        <h2>Status</h2>
+        <p id="debug-text">Press Automatic to begin sorting…</p>
+      </div>
+    </div>
+
+    <div class="right">
+      <div id="code-container">
+        <h2>Merge Sort</h2>
+        <pre id="algorithm-code"><span id="code-line-1">function mergeSort(arr, left, right) {</span>
+<span id="code-line-2">  if (left &lt; right) {</span>
+<span id="code-line-3">    let mid = Math.floor((left + right) / 2);</span>
+<span id="code-line-4">    mergeSort(arr, left, mid);</span>
+<span id="code-line-5">    mergeSort(arr, mid + 1, right);</span>
+<span id="code-line-6">    merge(arr, left, mid, right);</span>
+<span id="code-line-7">  }</span>
+<span id="code-line-8">}</span>
+<span id="code-line-9">function merge(arr, left, mid, right) {</span>
+<span id="code-line-10">  let L = arr.slice(left, mid + 1);</span>
+<span id="code-line-11">  let R = arr.slice(mid + 1, right + 1);</span>
+<span id="code-line-12">  let i = 0, j = 0, k = left;</span>
+<span id="code-line-13">  while (i &lt; L.length &amp;&amp; j &lt; R.length)</span>
+<span id="code-line-14">    arr[k++] = L[i] &lt;= R[j] ? L[i++] : R[j++];</span>
+<span id="code-line-15">}</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="description">
+    <div class="description-inner">
+      <h2>About Merge Sort</h2>
+      <p>Merge Sort is a stable divide-and-conquer algorithm. It divides the array into halves, recursively sorts each half, then merges them back together in sorted order.</p>
+      <h3>Complexity</h3>
+      <div class="complexity-grid">
+        <div class="complexity-card"><div class="label">Time (all)</div><div class="value">O(n log n)</div></div>
+        <div class="complexity-card"><div class="label">Space</div><div class="value">O(n)</div></div>
+        <div class="complexity-card"><div class="label">Stable</div><div class="value">Yes</div></div>
+        <div class="complexity-card"><div class="label">Method</div><div class="value">Divide</div></div>
+      </div>
+      <h3>Visualizing Algorithm</h3>
+      <img src="https://media.geeksforgeeks.org/wp-content/uploads/20250923102849709166/arr_.webp" alt="Merge Sort Visualization" class="description-image" style="display: block; margin: 20px auto; max-width: 600px; width: 100%;" />
+    </div>
+  </div>
+
+  <footer>
+    <img src="../assests/logbase10-wordmark.svg" alt="LogBase10" width="120px">
+    <p>© 2024 LogBase10. All rights reserved.</p>
+  </footer>
+
+  <script src="merge.js"></script>
+</body>
+</html>
+

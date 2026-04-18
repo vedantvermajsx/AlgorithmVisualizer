@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insertion Sort — Visualizer</title>
+  <link rel="stylesheet" href="../css/exponential-shared.css">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <a href="../index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px;">
+        <img src="../assests/logbase10-icon-dark.svg" alt="LogBase10" width="32px">
+        <h1>Insertion <span>Sort</span></h1>
+      </a>
+    </div>
+  </header>
+
+  <div class="wrapper">
+    <div class="left">
+      <div id="array-container"></div>
+
+
+
+      <div class="controls">
+        <label for="Size">Size</label>
+        <input type="number" id="Size" placeholder="max 50">
+        <button onclick="startAutomaticSort()">Automatic</button>
+        <button onclick="setManualMode()">Manual</button>
+        <button onclick="stepSort()" id="step-button" disabled>Step</button>
+        <button onclick="resetArray()">Reset</button>
+      </div>
+
+      <div id="debug-panel">
+        <h2>Status</h2>
+        <p id="debug-text">Press Automatic or Manual to begin sorting…</p>
+      </div>
+    </div>
+
+    <div class="right">
+      <div id="code-container">
+        <h2>Insertion Sort</h2>
+        <pre id="algorithm-code"><span id="code-line-1">for (let i = 1; i &lt; n; i++) {</span>
+<span id="code-line-2">  let key = arr[i];</span>
+<span id="code-line-3">  let j = i - 1;</span>
+<span id="code-line-4">  while (j &gt;= 0 &amp;&amp; arr[j] &gt; key) {</span>
+<span id="code-line-5">    arr[j + 1] = arr[j];</span>
+<span id="code-line-6">    j--;</span>
+<span id="code-line-7">  }</span>
+<span id="code-line-8">  arr[j + 1] = key;</span>
+<span id="code-line-9">}</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="description">
+    <div class="description-inner">
+      <h2>About Insertion Sort</h2>
+      <p>Insertion Sort builds a sorted array one element at a time by taking each element and inserting it into its correct position within the already-sorted portion of the array.</p>
+      <h3>Complexity</h3>
+      <div class="complexity-grid">
+        <div class="complexity-card"><div class="label">Time (avg)</div><div class="value">O(n²)</div></div>
+        <div class="complexity-card"><div class="label">Time (best)</div><div class="value">O(n)</div></div>
+        <div class="complexity-card"><div class="label">Space</div><div class="value">O(1)</div></div>
+        <div class="complexity-card"><div class="label">Stable</div><div class="value">Yes</div></div>
+      </div>
+      <h3>Visualizing Algorithm</h3>
+      <img src="https://media.geeksforgeeks.org/wp-content/uploads/20250322120814021166/Insertion-Sort--1.webp" alt="Insertion Sort Visualization" class="description-image" style="display: block; margin: 20px auto; max-width: 600px; width: 100%;" />
+    </div>
+  </div>
+
+  <footer>
+    <img src="../assests/logbase10-wordmark.svg" alt="LogBase10" width="120px">
+    <p>© 2024 LogBase10. All rights reserved.</p>
+  </footer>
+
+  <script src="insertion.js"></script>
+</body>
+</html>
+

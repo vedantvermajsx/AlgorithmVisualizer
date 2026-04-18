@@ -1,0 +1,192 @@
+@font-face {
+  font-family: Customfamily;
+  src: url("./assets/Orbitron-Medium.ttf");
+}
+
+
+.local_large_navbar {
+  font-weight: 600;
+  font-size: 20px;
+  display: flex;
+}
+
+.local_large_navbar:hover {
+  color: crimson !important;
+}
+
+.local-top-logo {
+  font-family: Customfamily, sans-serif;
+  font-size: 1.2em;
+  font-weight: 500;
+  color: crimson;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  text-align: center;
+  margin: 0;
+  padding: 0px;
+}
+
+.custom-icon {
+  width: 200pt;
+  height: 30pt;
+  fill: none;
+  stroke: #000000;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: carve 8s linear forwards;
+}
+
+@keyframes carve {
+  0% {
+    filter: blur(10px);
+    stroke-dasharray: 10;
+  }
+
+  20% {
+    filter: blur(0);
+  }
+
+  100% {
+    fill: #000000;
+    stroke-dasharray: 350;
+  }
+}
+
+h1 {
+  color: #333;
+}
+
+.Middle .card-container {
+  display: grid;
+  place-content: center;
+  position: relative;
+  min-height: 200px;
+  width: 90%;
+  color: blue;
+}
+
+.category-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.category-title {
+  color: #fff;
+  font-family: Customfamily, sans-serif;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background: linear-gradient(to right, #ff0055, #7000ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  width: fit-content;
+}
+
+.card-container {
+  background-color: transparent;
+  padding-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-auto-rows: 280px;
+  gap: 30px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.card {
+  border-radius: 30px;
+  box-shadow:
+    10px 10px 10px rgb(25, 25, 25),
+    -2px -5px 10px rgb(60, 60, 60);
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid red;
+  background-color: #000000;
+  position: relative;
+  width: 100%;
+  height: auto;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: scale 0.3s ease;
+  filter: grayscale(0.8);
+  cursor: pointer;
+}
+
+.card:hover {
+  filter: grayscale(0);
+  scale: 1.05;
+}
+
+h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.Middle {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+.Middle h1.main-title {
+  color: #00f2ff;
+  font-family: Customfamily, sans-serif;
+  font-size: 4rem;
+  font-weight: 900;
+  margin-top: 50px;
+  margin-bottom: 80px;
+  text-align: center;
+  text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+  letter-spacing: 5px;
+}
+
+.footer {
+  width: 100vw;
+  min-height: 10vh;
+}
+
+.wrapper {
+  overflow: hidden;
+}
+
+.local_footer_text {
+  font-size: 25px;
+  font-weight: 500;
+  font-family: Verdana;
+}
+
+.local_footer_logos {
+  font-size: 30px;
+  width: 24px;
+  height: 24px;
+  color: aliceblue;
+  fill: aliceblue;
+}
+
+.local_footer_logos:hover {
+  color: rgb(110, 168, 254);
+  fill: rgb(110, 168, 254);
+}
+
+.local_footer_tag_text {
+  color: aliceblue;
+  font-size: 20px;
+}
+
+.footer_border_box {
+  min-height: 40vh;
+  box-shadow: blue 10px 0px 50px 8px;
+}

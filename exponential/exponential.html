@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exponential Search — Visualizer</title>
+  <link rel="stylesheet" href="../css/exponential-shared.css">
+</head>
+
+<body>
+  <header>
+    <div class="header-container">
+      <a href="../index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px;">
+        <img src="../assests/logbase10-icon-dark.svg" alt="LogBase10" width="32px">
+        <h1>Exponential <span>Search</span></h1>
+      </a>
+    </div>
+  </header>
+
+  <div class="wrapper">
+    <div class="left">
+      <div id="array-container"></div>
+
+
+
+      <div class="controls">
+        <label for="Size">Size</label>
+        <input type="number" id="Size" placeholder="max 50">
+        <label for="target-val">Target</label>
+        <input type="number" id="target-val" placeholder="value">
+        <button id="automatic" onclick="startAutomaticSort()">Automatic</button>
+        <button id="manual" onclick="setManualMode()">Manual</button>
+        <button id="step-button" onclick="stepSort()" disabled>Step</button>
+        <button onclick="resetArray()">Reset</button>
+      </div>
+
+      <div id="debug-panel">
+        <h2>Status</h2>
+        <p id="debug-text">Press Automatic to begin searching…</p>
+      </div>
+    </div>
+
+    <div class="right">
+      <div id="code-container">
+        <h2>Exponential Search</h2>
+        <pre id="algorithm-code"><span id="code-line-1">function exponentialSearch(arr, target) {</span>
+<span id="code-line-2">  if (arr[0] === target) return 0;</span>
+<span id="code-line-3">  let i = 1;</span>
+<span id="code-line-4">  while (i &lt; arr.length && arr[i] &lt; target) {</span>
+<span id="code-line-5">    i = i * 2;</span>
+<span id="code-line-6">  }</span>
+<span id="code-line-7">  let left = Math.floor(i / 2);</span>
+<span id="code-line-8">  let right = Math.min(i, arr.length - 1);</span>
+<span id="code-line-9">  return binarySearch(arr, target, left, right);</span>
+<span id="code-line-10">}</span>
+
+<span id="code-line-12">function binarySearch(arr, target, left, right) {</span>
+<span id="code-line-13">  while (left &lt;= right) {</span>
+<span id="code-line-14">    let mid = Math.floor((left + right) / 2);</span>
+<span id="code-line-15">    if (arr[mid] === target) return mid;</span>
+<span id="code-line-16">    if (arr[mid] &lt; target) left = mid + 1;</span>
+<span id="code-line-17">    else right = mid - 1;</span>
+<span id="code-line-18">  }</span>
+<span id="code-line-19">  return -1;</span>
+<span id="code-line-20">}</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="description">
+    <div class="description-inner">
+      <h2>About Exponential Search</h2>
+      <p>Exponential Search first finds a range where the target may exist by doubling the index, then performs Binary
+        Search within that range. Ideal for unbounded or infinite sorted arrays.</p>
+      <h3>Complexity</h3>
+      <div class="complexity-grid">
+        <div class="complexity-card">
+          <div class="label">Time</div>
+          <div class="value">O(log n)</div>
+        </div>
+        <div class="complexity-card">
+          <div class="label">Space</div>
+          <div class="value">O(1)</div>
+        </div>
+        <div class="complexity-card">
+          <div class="label">Sorted req.</div>
+          <div class="value">Yes</div>
+        </div>
+        <div class="complexity-card">
+          <div class="label">Unbounded</div>
+          <div class="value">Yes</div>
+        </div>
+      </div>
+      <h3>Visualizing Algorithm</h3>
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Exponential_Search.png/600px-Exponential_Search.png"
+        alt="Exponential Search Visualization" class="description-image"
+        style="display: block; margin: 20px auto; max-width: 600px; width: 100%;" />
+    </div>
+  </div>
+
+  <footer>
+    <img src="../assests/logbase10-wordmark.svg" alt="LogBase10" width="120px">
+    <p>© 2024 LogBase10. All rights reserved.</p>
+  </footer>
+
+  <script src="exponential.js"></script>
+</body>
+
+</html>

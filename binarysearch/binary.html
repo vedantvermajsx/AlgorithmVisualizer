@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binary Search — Visualizer</title>
+  <link rel="stylesheet" href="../css/exponential-shared.css">
+</head>
+
+<body>
+  <header>
+    <div class="header-container">
+      <a href="../index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px;">
+        <img src="../assests/logbase10-icon-dark.svg" alt="LogBase10" width="32px">
+        <h1>Binary <span>Search</span></h1>
+      </a>
+    </div>
+  </header>
+
+  <div class="wrapper">
+    <div class="left">
+      <div id="array-container"></div>
+
+
+
+      <div class="controls">
+        <label for="Size">Size</label>
+        <input type="number" id="Size" placeholder="max 50">
+        <label for="target-val">Target</label>
+        <input type="number" id="target-val" placeholder="value">
+        <button onclick="startAutoSearch()">Automatic</button>
+        <button onclick="startManualSearch()">Manual</button>
+        <button onclick="nextStep()" id="step-button" disabled>Step</button>
+        <button onclick="resetArray()">Reset</button>
+      </div>
+
+      <div id="debug-panel">
+        <h2>Status</h2>
+        <p id="debug-text">Press Automatic or Manual to begin searching…</p>
+      </div>
+    </div>
+
+    <div class="right">
+      <div id="code-container">
+        <h2>Binary Search</h2>
+        <pre id="algorithm-code"><span id="code-line-1">function binarySearch(arr, target) {</span>
+<span id="code-line-2">  let left = 0, right = arr.length - 1;</span>
+<span id="code-line-3">  while (left &lt;= right) {</span>
+<span id="code-line-4">    let mid = Math.floor((left + right) / 2);</span>
+<span id="code-line-5">    if (arr[mid] === target) return mid;</span>
+<span id="code-line-6">    if (arr[mid] &lt; target) left = mid + 1;</span>
+<span id="code-line-7">    else right = mid - 1;</span>
+<span id="code-line-8">  }</span>
+<span id="code-line-9">  return -1;</span>
+<span id="code-line-10">}</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="description">
+    <div class="description-inner">
+      <h2>About Binary Search</h2>
+      <p>Binary Search works on sorted arrays by repeatedly dividing the search interval in half. It compares the target
+        with the middle element and eliminates half of the remaining elements each step.</p>
+      <h3>Complexity</h3>
+      <div class="complexity-grid">
+        <div class="complexity-card">
+          <div class="label">Time (avg)</div>
+          <div class="value">O(log n)</div>
+        </div>
+        <div class="complexity-card">
+          <div class="label">Time (best)</div>
+          <div class="value">O(1)</div>
+        </div>
+        <div class="complexity-card">
+          <div class="label">Space</div>
+          <div class="value">O(1)</div>
+        </div>
+        <div class="complexity-card">
+          <div class="label">Sorted req.</div>
+          <div class="value">Yes</div>
+        </div>
+      </div>
+      <h3>Visualizing Algorithm</h3>
+      <img src="https://media.geeksforgeeks.org/wp-content/uploads/20260314112909421169/frame_1.webp"
+        alt="Binary Search Visualization" class="description-image"
+        style="display: block; margin: 20px auto; max-width: 600px; width: 100%;" />
+    </div>
+  </div>
+
+  <footer>
+    <img src="../assests/logbase10-wordmark.svg" alt="LogBase10" width="120px">
+    <p>© 2024 LogBase10. All rights reserved.</p>
+  </footer>
+
+  <script src="binary.js"></script>
+</body>
+
+</html>
