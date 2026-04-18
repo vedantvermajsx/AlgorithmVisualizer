@@ -139,3 +139,4 @@ function resetArray() {
 
 SizeInput.addEventListener('change', GetSize);
 generateArray();
+

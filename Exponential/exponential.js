@@ -336,3 +336,4 @@ async function MbinarySearchStep() {
 }
 
 document.querySelector("button[onclick='resetArray()']").addEventListener("click", resetArray);
+

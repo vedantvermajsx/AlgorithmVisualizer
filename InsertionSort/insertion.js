@@ -1,16 +1,11 @@
 let array = [];
-let swappedMade = 0;
 const arrayContainer = document.getElementById("array-container");
 const debugText = document.getElementById("debug-text");
 const stepButton = document.getElementById("step-button");
-
 let Size = 0;
 let isSorting = false;
 let isManual = false;
-let i = 0, j = 0;
-
-let MAX = 100;
-let MIN = 10;
+let i = 1, j = 0;
 const SizeInput = document.getElementById("Size");
 
 function highlightCodeLine(line) {
@@ -23,14 +18,14 @@ function GetSize() {
     Size = parseInt(SizeInput.value);
     SizeInput.value = '';
     if (!Size || Size > 50) {
-        updateDebugText("Please enter a valid size value (max 50).");
+        updateDebugText("Please enter a valid size (max 50).");
         return;
     }
     generateArray();
 }
 
 function generateArray() {
-    array = Array.from({ length: Size || 20 }, () => Math.floor(Math.random() * (MAX - MIN)) + MIN);
+    array = Array.from({ length: Size || 20 }, () => Math.floor(Math.random() * 90) + 10);
     renderArray();
     resetIndices();
     updateDebugText("New array generated. Ready for sorting.");
@@ -41,7 +36,6 @@ function renderArray() {
     const bars = arrayContainer.children;
 
     if (bars.length !== array.length) {
-
         arrayContainer.innerHTML = "";
         array.forEach((value) => {
             const bar = document.createElement("div");
@@ -50,7 +44,6 @@ function renderArray() {
             arrayContainer.appendChild(bar);
         });
     } else {
-
         array.forEach((value, index) => {
             bars[index].style.height = `${(value / adjustedMax) * 100}%`;
         });
@@ -62,9 +55,8 @@ function updateDebugText(message) {
 }
 
 function resetIndices() {
-    swappedMade = 0;
-    i = 0;
-    j = 0;
+    i = 1;
+    j = 0; 
 }
 
 function clearBarStates() {
@@ -78,10 +70,11 @@ function clearBarStates() {
 
 async function manualSortStep() {
     const bars = document.getElementsByClassName("bar");
-    if (i >= array.length - 1) {
+    if (i >= array.length) {
         updateDebugText("Array is fully sorted! 🎉");
         highlightCodeLine(0);
         Array.from(bars).forEach(bar => bar.classList.add("sorted"));
+        isSorting = false;
         stepButton.disabled = true;
         return;
     }
@@ -89,94 +82,105 @@ async function manualSortStep() {
     clearBarStates();
 
     highlightCodeLine(1);
-    await new Promise(resolve => setTimeout(resolve, 200));
-    highlightCodeLine(2);
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-    bars[j].classList.add("active");
-    bars[j + 1].classList.add("active");
+    let key = array[i];
+    highlightCodeLine(2);
+    bars[i].classList.add("active");
+    await new Promise(resolve => setTimeout(resolve, 300));
 
     highlightCodeLine(3);
-    await new Promise(resolve => setTimeout(resolve, 400));
+    j = i - 1;
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-    if (array[j] > array[j + 1]) {
+    while (j >= 0 && array[j] > key) {
         highlightCodeLine(4);
-        await new Promise(resolve => setTimeout(resolve, 300));
+        const currentBars = document.getElementsByClassName("bar");
+        if (currentBars[j]) currentBars[j].classList.add("comparing");
+        await new Promise(resolve => setTimeout(resolve, 400));
+
         highlightCodeLine(5);
-        await new Promise(resolve => setTimeout(resolve, 300));
-        highlightCodeLine(6);
-        swappedMade++;
-        [array[j], array[j + 1]] = [array[j + 1], array[j]];
+        array[j + 1] = array[j];
         renderArray();
         const newBars = document.getElementsByClassName("bar");
-        newBars[j].classList.add("comparing");
-        newBars[j + 1].classList.add("comparing");
-        updateDebugText(`✓ Swapped elements at index ${j} and ${j + 1}`);
-        await new Promise(resolve => setTimeout(resolve, 600));
-        newBars[j].classList.remove("comparing");
-        newBars[j + 1].classList.remove("comparing");
-    } else {
-        updateDebugText(`→ No swap needed at index ${j} and ${j + 1}`);
+        if (newBars[j]) newBars[j].classList.add("comparing");
+        if (newBars[j + 1]) newBars[j + 1].classList.add("comparing");
+        if (newBars[i]) newBars[i].classList.add("active");
+        await new Promise(resolve => setTimeout(resolve, 400));
+        if (newBars[j]) newBars[j].classList.remove("comparing");
+
+        highlightCodeLine(6);
+        j--;
+        updateDebugText(`→ Shifted element to index ${j + 2}`);
         await new Promise(resolve => setTimeout(resolve, 300));
     }
 
-    j++;
-    if (j >= array.length - i - 1) {
-        const finalBars = document.getElementsByClassName("bar");
-        finalBars[array.length - i - 1].classList.add("sorted");
-        j = 0;
-        i++;
+    highlightCodeLine(8);
+    array[j + 1] = key;
+    renderArray();
+    updateDebugText(`✓ Inserted key ${key} at index ${j + 1}`);
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    i++;
+    const finalBars = document.getElementsByClassName("bar");
+    for (let k = 0; k < i; k++) {
+        if (finalBars[k]) finalBars[k].classList.add("sorted");
     }
 }
 
 async function automaticSort() {
-    const bars = document.getElementsByClassName("bar");
-    for (let i = 0; i < array.length - 1; i++) {
+    isSorting = true;
+    for (let i = 1; i < array.length; i++) {
+        if (!isSorting || isManual) return;
+
         highlightCodeLine(1);
         await new Promise(resolve => setTimeout(resolve, 200));
+        let key = array[i];
 
-        for (let j = 0; j < array.length - i - 1; j++) {
+        highlightCodeLine(2);
+        const startBars = document.getElementsByClassName("bar");
+        if (startBars[i]) startBars[i].classList.add("active");
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        let j = i - 1;
+        highlightCodeLine(3);
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        while (j >= 0 && array[j] > key) {
             if (!isSorting || isManual) return;
 
-            clearBarStates();
-            highlightCodeLine(2);
-            await new Promise(resolve => setTimeout(resolve, 200));
-
+            highlightCodeLine(4);
             const currentBars = document.getElementsByClassName("bar");
-            currentBars[j].classList.add("active");
-            currentBars[j + 1].classList.add("active");
+            if (currentBars[j]) currentBars[j].classList.add("comparing");
+            await new Promise(resolve => setTimeout(resolve, 400));
 
-            highlightCodeLine(3);
-            await new Promise(resolve => setTimeout(resolve, 500));
+            highlightCodeLine(5);
+            array[j + 1] = array[j];
+            renderArray();
+            const newBars = document.getElementsByClassName("bar");
+            if (newBars[j]) newBars[j].classList.add("comparing");
+            if (newBars[j + 1]) newBars[j + 1].classList.add("comparing");
 
-            if (array[j] > array[j + 1]) {
-                highlightCodeLine(4);
-                await new Promise(resolve => setTimeout(resolve, 300));
-                highlightCodeLine(5);
-                await new Promise(resolve => setTimeout(resolve, 300));
-                highlightCodeLine(6);
-                swappedMade++;
-                [array[j], array[j + 1]] = [array[j + 1], array[j]];
-                renderArray();
-                const swapBars = document.getElementsByClassName("bar");
-                swapBars[j].classList.add("comparing");
-                swapBars[j + 1].classList.add("comparing");
-                updateDebugText(`✓ Swapped index ${j} and ${j + 1}`);
-                await new Promise(resolve => setTimeout(resolve, 600));
-                swapBars[j].classList.remove("comparing");
-                swapBars[j + 1].classList.remove("comparing");
-            } else {
-                updateDebugText(`→ Comparing index ${j} and ${j + 1} — no swap`);
-                await new Promise(resolve => setTimeout(resolve, 400));
-            }
+            highlightCodeLine(6);
+            j--;
+            updateDebugText(`→ Shifting — key: ${key}`);
+            await new Promise(resolve => setTimeout(resolve, 400));
         }
 
-        const sortedBars = document.getElementsByClassName("bar");
-        sortedBars[array.length - i - 1].classList.add("sorted");
+        highlightCodeLine(8);
+        array[j + 1] = key;
+        renderArray();
+
+        const afterBars = document.getElementsByClassName("bar");
+        for (let k = 0; k <= i; k++) {
+            if (afterBars[k]) afterBars[k].classList.add("sorted");
+        }
+        updateDebugText(`✓ Inserted key ${key} at index ${j + 1}`);
+        await new Promise(resolve => setTimeout(resolve, 500));
     }
 
-    const allBars = document.getElementsByClassName("bar");
-    Array.from(allBars).forEach(bar => bar.classList.add("sorted"));
+    const finalBars = document.getElementsByClassName("bar");
+    Array.from(finalBars).forEach(bar => bar.classList.add("sorted"));
     highlightCodeLine(0);
     updateDebugText("✅ Array fully sorted!");
     isSorting = false;
@@ -195,7 +199,6 @@ async function stepSort() {
     if (isManual) {
         stepButton.disabled = true;
         await manualSortStep();
-
         const bars = document.getElementsByClassName("bar");
         const allSorted = Array.from(bars).every(b => b.classList.contains("sorted"));
         if (!allSorted) stepButton.disabled = false;
@@ -206,7 +209,6 @@ function startAutomaticSort() {
     if (!isSorting) {
         isManual = false;
         stepButton.disabled = true;
-        isSorting = true;
         resetIndices();
         automaticSort();
     }
@@ -222,4 +224,3 @@ function resetArray() {
 
 SizeInput.addEventListener('change', GetSize);
 generateArray();
-

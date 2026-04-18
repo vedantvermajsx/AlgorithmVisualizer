@@ -17,7 +17,7 @@
         <a href="../index.html"
             style="text-decoration: none; display: flex; align-items: center; gap: 15px; padding: 10px 20px;">
             <img src="../assests/logbase10-icon-dark.svg" alt="LogBase10 Icon" width="40px">
-            <h1 style="margin: 0; color: white;">BFS <span>Visualization</span></h1>
+            <h1 style="margin: 0; color: white;">A* <span>Search</span> Visualization</h1>
         </a>
     </header>
 
@@ -35,39 +35,46 @@
     </div>
 
     <section>
-        <h2>About BFS Algorithm</h2>
-        <p>The BFS (Breadth-First Search) algorithm is a graph traversal algorithm used to explore nodes in a graph in
-            layers, starting from the source node and moving outward to adjacent nodes level by level. It is primarily
-            used to find the shortest path in an unweighted graph.</p>
+        <h2>About A* Algorithm</h2>
+        <p>The A* (A-star) algorithm is a popular and efficient pathfinding algorithm used for finding the shortest path
+            between nodes in a graph...</p>
 
-        <h3>How BFS Works</h3>
-        <p>BFS explores all neighboring nodes at the present depth level before moving on to nodes at the next depth
-            level. It uses a queue data structure to keep track of nodes to visit next.</p>
+        <h3>How A* Works</h3>
+        <p>A* uses the following formula to evaluate each node:</p>
+        <pre>
+        f(n) = g(n) + h(n)
+        </pre>
+        <ul>
+            <li><strong>f(n)</strong>: The total cost of the path through node n.</li>
+            <li><strong>g(n)</strong>: The cost to reach node n from the start node.</li>
+            <li><strong>h(n)</strong>: The heuristic estimate of the cost from node n to the goal.</li>
+        </ul>
 
         <h3>Time and Space Complexity</h3>
         <ul>
-            <li><strong>Time Complexity:</strong> O(V + E), where V is the number of vertices and E is the number of
-                edges in the graph.</li>
-            <li><strong>Space Complexity:</strong> O(V), due to the storage needed for the queue and visited nodes.</li>
+            <li><strong>Time Complexity:</strong> O(b^d), where b is the branching factor and d is the depth of the
+                solution.</li>
+            <li><strong>Space Complexity:</strong> O(b^d), due to the maintenance of a priority queue.</li>
         </ul>
 
-        <h3>Visualizing BFS Algorithm</h3>
-        <p>The visualization below shows how the algorithm explores nodes in layers, ensuring the shortest path is
-            found:</p>
-        <img src="https://media.geeksforgeeks.org/wp-content/uploads/20251014173018632936/frame_3148.webp" alt="BFS Visualization" class="description-image" style="display: block; margin: 20px auto; max-width: 600px; width: 100%;" />
+        <h3>Visualizing A* Algorithm</h3>
+        <p>The visualization below shows how the algorithm finds the shortest path...</p>
 
-        <h3>Advantages of BFS Algorithm</h3>
+        <img src="https://media.geeksforgeeks.org/wp-content/uploads/a_-search-algorithm-1.png" alt="A* Algorithm Visualization" width="600" />
+
+        <h3>Advantages of A* Algorithm</h3>
         <ul>
-            <li>Guarantees finding the shortest path in an unweighted graph.</li>
-            <li>Simple and easy to implement.</li>
+            <li>Optimal pathfinding when the heuristic is admissible.</li>
+            <li>Efficient compared to other search algorithms like Dijkstra.</li>
         </ul>
 
-        <h3>Limitations of BFS Algorithm</h3>
+        <h3>Limitations of A* Algorithm</h3>
         <ul>
-            <li>Can be slow for large graphs with many nodes and edges.</li>
-            <li>Requires more memory as the size of the graph increases.</li>
+            <li>Performance can degrade with poor heuristics.</li>
+            <li>Memory usage can be high for large search spaces.</li>
         </ul>
     </section>
+
 
     <section class="footer container-fluid bg-dark row  footer_border_box p-5"
         style="margin-top:100px; width:100vw; min-height:20vh; display:flex; flex-wrap:wrap; justify-content:space-between;">
@@ -91,7 +98,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-    <script type="module" src="bfs.js"></script>
+    <script type="module" src="astar.js"></script>
 
 </body>
 

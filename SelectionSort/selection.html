@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selection Sort Visualizer</title>
+    <link rel="stylesheet" href="../css/exponential-shared.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="../index.html" style="text-decoration: none; display: flex; align-items: center; gap: 15px;">
+                <img src="../assests/logbase10-icon-dark.svg" alt="LogBase10 Icon" width="40px">
+                <h1>Selection <span>Sort</span> Visualization</h1>
+            </a>
+        </div>
+    </header>
+
+    <div class="wrapper">
+        <div class="left">
+            <div id="array-container"></div>
+            <div class="controls">
+                <label for="Size">Size:</label>
+                <input type="number" id="Size" placeholder="Enter Size (max 50)">
+                <button onclick="startAutomaticSort()">Automatic</button>
+                <button onclick="setManualMode()">Manual</button>
+                <button onclick="stepSort()" id="step-button" disabled>Step</button>
+                <button onclick="resetArray()">Reset</button>
+            </div>
+            <div id="debug-panel">
+                <h2>Debug Info</h2>
+                <p id="debug-text">Press "Automatic" or "Manual" to begin sorting...</p>
+            </div>
+        </div>
+        <div class="right">
+            <div id="code-container">
+                <h2>Selection Sort Algorithm</h2>
+                <pre id="algorithm-code">
+<span id="code-line-1">for (int i = 0; i < n - 1; i++) {</span>
+<span id="code-line-2">  int min_idx = i;</span>
+<span id="code-line-3">  for (int j = i + 1; j < n; j++) {</span>
+<span id="code-line-4">    if (arr[j] < arr[min_idx]) {</span>
+<span id="code-line-5">      min_idx = j;</span>
+<span id="code-line-6">    }</span>
+<span id="code-line-7">  }</span>
+<span id="code-line-8">  int temp = arr[min_idx];</span>
+<span id="code-line-9">  arr[min_idx] = arr[i];</span>
+<span id="code-line-10">  arr[i] = temp;</span>
+<span id="code-line-11">}</span>
+                </pre>
+            </div>
+        </div>
+    </div>
+
+    <section class="description">
+        <h2>About Selection Sort</h2>
+        <img src="https://media.geeksforgeeks.org/wp-content/uploads/20240926134343/Selection-Sort-Algorithm-1.webp" alt="Selection Sort Animation" class="description-image" style="display: block; margin: 20px auto; max-width: 600px; width: 100%;">
+        <p>
+            Selection Sort is an in-place comparison sorting algorithm. It has an O(n²) time complexity, which makes it inefficient on large lists, and generally performs worse than the similar insertion sort.
+        </p>
+    </section>
+
+    <footer>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            <img src="../assests/logbase10-wordmark.svg" alt="LogBase10 Logo" width="150px">
+            <p>© 2024 LogBase10. Built with ❤️ by Vedant verma and Team.</p>
+        </div>
+    </footer>
+
+    <script src="selection.js"></script>
+</body>
+</html>
+

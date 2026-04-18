@@ -1,5 +1,5 @@
-import * as GridModule from "../Modules/GridModule.js";
-import { ModulegenerateMaze } from "../Modules/generateMaze.js";
+import * as GridModule from "../modules/gridmodule.js";
+import { ModulegenerateMaze } from "../modules/generatemaze.js";
 
 const numRows = GridModule.numRows;
 const numCols = GridModule.numCols;
@@ -185,3 +185,4 @@ function reconstructPathFromMeetingPoint(meetingPoint, isRunningFn) {
 }
 
 createGrid();
+

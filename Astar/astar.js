@@ -6,7 +6,8 @@ const numCols = GridModule.numCols;
 let grid = [];
 let startNode = null;
 let endNode = null;
-let queue = [];
+let openSet = [];
+let closedSet = [];
 let isMouseDown = false;
 let isRunning = false;
 let isSearching = false;
@@ -20,7 +21,7 @@ const debugText = document.getElementById("debug-text");
 gridContainer.addEventListener("mousedown", () => (isMouseDown = true));
 gridContainer.addEventListener("mouseup", () => (isMouseDown = false));
 gridContainer.addEventListener("mouseleave", () => (isMouseDown = false));
-startButton.addEventListener("click", startBFS);
+startButton.addEventListener("click", startAStar);
 resetButton.addEventListener("click", resetGrid);
 generateButton.addEventListener("click", () => {
     ModulegenerateMaze(numRows, numCols, grid);
@@ -70,12 +71,17 @@ function resetGrid() {
     isSearching = false;
     startNode = null;
     endNode = null;
-    queue = [];
+    openSet = [];
+    closedSet = [];
     startButton.disabled = false;
     debugText.innerText = 'Click "Start" to begin.';
 }
 
-async function startBFS() {
+function heuristic(a, b) {
+    return Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
+}
+
+async function startAStar() {
     if (!startNode || !endNode) {
         alert("Please select both start and end nodes.");
         return;
@@ -83,49 +89,53 @@ async function startBFS() {
 
     isRunning = true;
     isSearching = true;
+    startNode.g = 0;
+    startNode.f = heuristic(startNode, endNode);
     startNode.visited = true;
-    startNode.distance = 0;
 
     startButton.disabled = true;
-    debugText.innerText = "BFS Parallel Algorithm started...";
+    debugText.innerText = "A* Algorithm started...";
 
-    // Start the first worker
     spawnWorker(startNode);
 }
 
 function spawnWorker(current) {
-    if (!isRunning || !isSearching) return; // Halt if search is finished or cancelled
+    if (!isRunning || !isSearching) return;
 
     if (current === endNode) {
-        isSearching = false; // Signal all other workers to stop
+        isSearching = false;
         GridModule.reconstructPath(endNode, startNode, debugText, () => isRunning);
         return;
     }
 
-    // Process nodes with a slight distributed delay
+    // Delay varies slightly by heuristic to give A* its "directed" organic feel
+    const delay = 30 + (current.h * 1.5); 
+
     setTimeout(() => {
         if (!isRunning || !isSearching) return;
         
-        debugText.innerText = `Workers actively exploring...`;
+        debugText.innerText = `Workers actively exploring (A*)...`;
 
         current.neighbors.forEach((neighbor) => {
             if (!neighbor.isWall) {
-                let alt = current.distance + 1;
-                if (alt < neighbor.distance) {
-                    neighbor.distance = alt;
+                const tempG = current.g + 1;
+                if (tempG < neighbor.g) {
                     neighbor.previous = current;
+                    neighbor.g = tempG;
+                    neighbor.h = heuristic(neighbor, endNode);
+                    neighbor.f = neighbor.g + neighbor.h;
+
                     if (!neighbor.visited) {
                         neighbor.visited = true;
                         GridModule.markAsHead(neighbor);
-                        // Spawn an independent worker for this neighbor!
                         spawnWorker(neighbor);
                     }
                 }
             }
         });
-        
+
         GridModule.markAsVisited(current);
-    }, 48);
+    }, delay);
 }
 
 createGrid();

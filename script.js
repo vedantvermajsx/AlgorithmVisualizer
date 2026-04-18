@@ -1,23 +1,23 @@
 const algorithms = {
   sorting: [
-    { name: "Bubble Sort", img: "./assests/BubbleSort.png", url: "./BubbleSort/Bubble.html" },
-    { name: "Insertion Sort", img: "./assests/InsertionSort.png", url: "./InsertionSort/insertion.html" },
-    { name: "Selection Sort", img: "./assests/SelectionSort.png", url: "./SelectionSort/selection.html" },
-    { name: "Quick Sort", img: "./assests/QuickSort.png", url: "./QuickSort/quick.html" },
-    { name: "Merge Sort", img: "./assests/MergeSort.png", url: "./MergeSort/merge.html" },
-    { name: "Heap Sort", img: "./assests/HeapSort.png", url: "./HeapSort/heap.html" },
+    { name: "Bubble Sort", img: "./assests/bubblesort.png", url: "./bubblesort/bubble.html" },
+    { name: "Insertion Sort", img: "./assests/insertionsort.png", url: "./insertionsort/insertion.html" },
+    { name: "Selection Sort", img: "./assests/selectionsort.png", url: "./selectionsort/selection.html" },
+    { name: "Quick Sort", img: "./assests/quicksort.png", url: "./quicksort/quick.html" },
+    { name: "Merge Sort", img: "./assests/mergesort.png", url: "./mergesort/merge.html" },
+    { name: "Heap Sort", img: "./assests/heapsort.png", url: "./heapsort/heap.html" },
   ],
   searching: [
-    { name: "Binary Search", img: "./assests/BinarySearch.png", url: "./BinarySearch/Binary.html" },
-    { name: "Linear Search", img: "./assests/LinearSearch.png", url: "./LinearSearch/linear.html" },
-    { name: "Exponential Search", img: "./assests/Exponential.png", url: "./Exponential/exponential.html" },
+    { name: "Binary Search", img: "./assests/binarysearch.png", url: "./binarysearch/binary.html" },
+    { name: "Linear Search", img: "./assests/linearsearch.png", url: "./linearsearch/linear.html" },
+    { name: "Exponential Search", img: "./assests/exponential.png", url: "./exponential/exponential.html" },
   ],
   graphs: [
-    { name: "A* Search", img: "./assests/Astar.png", url: "./Astar/Astar.html" },
-    { name: "BFS", img: "./assests/BreadthFirst.png", url: "./BFS/bfs.html" },
-    { name: "DFS", img: "./assests/DepthFirst.png", url: "./DFS/dfs.html" },
-    { name: "Dijkstra", img: "./assests/Dijkstra.png", url: "./Djktra/Dijiktra.html" },
-    { name: "Bi-Directional", img: "./assests/BiDirectional.png", url: "./BiDirectional/bidirectional.html" },
+    { name: "A* Search", img: "./assests/astar.png", url: "./astar/astar.html" },
+    { name: "BFS", img: "./assests/breadthfirst.png", url: "./bfs/bfs.html" },
+    { name: "DFS", img: "./assests/depthfirst.png", url: "./dfs/dfs.html" },
+    { name: "Dijkstra", img: "./assests/dijkstra.png", url: "./djktra/dijiktra.html" },
+    { name: "Bi-Directional", img: "./assests/bidirectional.png", url: "./bidirectional/bidirectional.html" },
   ]
 };
 
@@ -41,3 +41,4 @@ function showData() {
 }
 
 showData();
+
